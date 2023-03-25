@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPJsonUtilitiesTest\tests;
+namespace PHPMockingUtilitiesTest\tests;
 
 use Darling\PHPUnitTestUtilities\traits\PHPUnitConfigurationTests;
 use Darling\PHPUnitTestUtilities\traits\PHPUnitRandomValues;
@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
  * All roady test classes must extend from this class.
  *
  */
-class PHPJsonUtilitiesTest extends TestCase
+class PHPMockingUtilitiesTest extends TestCase
 {
     use PHPUnitConfigurationTests;
     use PHPUnitRandomValues;
