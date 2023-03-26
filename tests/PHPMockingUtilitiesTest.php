@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPMockingUtilitiesTest\tests;
+namespace Darling\PHPMockingUtilities\tests;
 
 use Darling\PHPUnitTestUtilities\traits\PHPUnitConfigurationTests;
 use Darling\PHPUnitTestUtilities\traits\PHPUnitRandomValues;
