@@ -2,61 +2,61 @@
 
 namespace Darling\PHPMockingUtilities\tests\interfaces\mock\values;
 
-use Darling\PHPMockingUtilities\interfaces\mock\values\MockValue;
+use Darling\PHPMockingUtilities\interfaces\mock\values\MockMixedValue;
 
 /**
- * The MockValueTestTrait defines common tests for
- * implementations of the MockValue interface.
+ * The MockMixedValueTestTrait defines common tests for
+ * implementations of the MockMixedValue interface.
  *
- * @see MockValue
+ * @see MockMixedValue
  *
  */
-trait MockValueTestTrait
+trait MockMixedValueTestTrait
 {
 
     /**
-     * @var MockValue $mockValue
+     * @var MockMixedValue $mockValue
      *                              An instance of a
-     *                              MockValue
+     *                              MockMixedValue
      *                              implementation to test.
      */
-    protected MockValue $mockValue;
+    protected MockMixedValue $mockValue;
 
     /**
-     * Return the MockValue implementation instance to test.
+     * Return the MockMixedValue implementation instance to test.
      *
-     * @return MockValue
+     * @return MockMixedValue
      *
      */
-    protected function mockValueTestInstance(): MockValue
+    protected function mockValueTestInstance(): MockMixedValue
     {
         return $this->mockValue;
     }
 
     /**
-     * Set the MockValue implementation instance to test.
+     * Set the MockMixedValue implementation instance to test.
      *
-     * @param MockValue $mockValueTestInstance
+     * @param MockMixedValue $mockValueTestInstance
      *                              An instance of an
      *                              implementation of
-     *                              the MockValue
+     *                              the MockMixedValue
      *                              interface to test.
      *
      * @return void
      *
      */
-    protected function setMockValueTestInstance(
-        MockValue $mockValueTestInstance
+    protected function setMockMixedValueTestInstance(
+        MockMixedValue $mockValueTestInstance
     ): void
     {
         $this->mockValue = $mockValueTestInstance;
     }
 
     /**
-     * Set up an instance of a MockValue implementation to test.
+     * Set up an instance of a MockMixedValue implementation to test.
      *
-     * This method must also set the MockValue implementation instance
-     * to be tested via the setMockValueTestInstance() method.
+     * This method must also set the MockMixedValue implementation instance
+     * to be tested via the setMockMixedValueTestInstance() method.
      *
      * This method may also be used to perform any additional setup
      * required by the implementation being tested.
@@ -68,8 +68,8 @@ trait MockValueTestTrait
      * ```
      * protected function setUp(): void
      * {
-     *     $this->setMockValueTestInstance(
-     *         new \Darling\PHPMockingUtilities\classes\mock\values\MockValue()
+     *     $this->setMockMixedValueTestInstance(
+     *         new \Darling\PHPMockingUtilities\classes\mock\values\MockMixedValue()
      *     );
      * }
      *
@@ -84,7 +84,7 @@ trait MockValueTestTrait
      *
      * @return void
      *
-     * @covers MockValue::value()
+     * @covers MockMixedValue::value()
      */
     public function testValueReturnsTheSameValueWhenCalledMoreThanOnce(): void
     {
