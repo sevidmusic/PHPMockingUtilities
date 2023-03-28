@@ -3,7 +3,7 @@
 namespace Darling\PHPMockingUtilities\interfaces\mock\values;
 
 /**
- * A MockValue can be used to mock a value.
+ * A MockMixedValue can be used to mock a value.
  *
  * @example
  *
@@ -15,11 +15,11 @@ namespace Darling\PHPMockingUtilities\interfaces\mock\values;
  *
  * ```
  */
-interface MockValue
+interface MockMixedValue
 {
 
     /**
-     * Return the value of this MockValue.
+     * Return the value of this MockMixedValue.
      *
      * @return mixed
      *

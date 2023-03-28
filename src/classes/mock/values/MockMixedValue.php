@@ -2,10 +2,10 @@
 
 namespace Darling\PHPMockingUtilities\classes\mock\values;
 
-use Darling\PHPMockingUtilities\interfaces\mock\values\MockValue as MockValueInterface;
+use Darling\PHPMockingUtilities\interfaces\mock\values\MockMixedValue as MockMixedValueInterface;
 use \stdClass;
 
-class MockValue implements MockValueInterface
+class MockMixedValue implements MockMixedValueInterface
 {
 
     public function __construct(private mixed $value = null)
