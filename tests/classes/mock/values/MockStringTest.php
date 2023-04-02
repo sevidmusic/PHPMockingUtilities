@@ -22,9 +22,10 @@ class MockStringTest extends PHPMockingUtilitiesTest
 
     public function setUp(): void
     {
-        $this->setMockStringTestInstance(
-            new MockString()
-        );
+        $mockString = new MockString();
+        $this->setMockStringTestInstance($mockString);
+        $this->setExpectedString($mockString->__toString());
+        $this->setTextTestInstance($mockString);
     }
 }
 
