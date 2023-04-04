@@ -3,16 +3,17 @@
 namespace Darling\PHPMockingUtilities\classes\mock\values;
 
 use Darling\PHPMockingUtilities\interfaces\mock\values\MockMixedValue as MockMixedValueInterface;
+use \Darling\PHPTextTypes\classes\strings\Text;
 use \stdClass;
 
 final class MockMixedValue implements MockMixedValueInterface
 {
 
-    public function __construct(private mixed $value = null)
+    private mixed $value = null;
+
+    public function __construct()
     {
-        if(!isset($this->value)) {
-            $this->value = $this->randomValue();
-        }
+        $this->value = $this->randomValue();
     }
 
     private function randomValue(): mixed
@@ -26,6 +27,8 @@ final class MockMixedValue implements MockMixedValueInterface
             [],
             function(): void {},
             new stdClass(),
+            null,
+            new Text('MockMixedValue'),
         ];
         return $values[array_rand($values)];
     }
