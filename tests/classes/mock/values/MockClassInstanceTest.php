@@ -25,13 +25,97 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
 
     public function setUp(): void
     {
+        $randomClassStringOrObjectInstance = $this->randomClassStringOrObjectInstance();
         $expectedReflection = new Reflection(
-            new ReflectionClass(new \stdClass()) # todo: use random class instance
+            new ReflectionClass(
+                $randomClassStringOrObjectInstance
+            )
         );
         $this->setExpectedReflection($expectedReflection);
         $this->setMockClassInstanceTestInstance(
             new MockClassInstance($expectedReflection)
         );
     }
+
+    /**
+     * Return a random fully qualified class name, or object instance.
+     *
+     * @return class-string|object
+     *
+     * @example
+     *
+     * ```
+     * var_dump($this->randomClassStringOrObjectInstance);
+     *
+     * // example output:
+     * string(8) "stdClass"
+     *
+     * ```
+     *
+     */
+    public function randomClassStringOrObjectInstance(): string|object
+    {
+        /** @var array<int, class-string|object> $classes */
+        $classes = [
+            new \stdClass(),
+            ClassThatDoesDefineMethods::class,
+            ClassThatDoesDefineMethods::class,
+            new ClassThatDoesNotDefineMethods(),
+            new ClassThatDoesDefineMethods(),
+            parent::randomClassStringOrObjectInstance(),
+        ];
+        return $classes[array_rand($classes)];
+    }
 }
 
+/**
+ * The following classes are defined here for use by
+ * the MockClassInstanceTest
+ *
+ * @todo Move test classes into their own files
+ *
+ */
+
+class ClassThatDoesNotDefineMethods
+{
+
+}
+
+class ClassThatDoesDefineMethods
+{
+
+    public function __constuct(int $int, bool $bool): void {}
+
+    public function methodWithoutArguments(): void {}
+
+    /**
+     * A method that expects arguments.
+     *
+     * @param array<mixed> $array
+     * @param string|array<mixed> $moreThanOneTypeAccepted
+     *
+     * @return void
+     *
+     * @example
+     *
+     * ```
+     *
+     * ```
+     *
+     */
+    public function methodWithArguments(
+        string $string,
+        int $int,
+        bool $bool,
+        float $float,
+        array $array,
+        object $object,
+        mixed $mixed,
+        string|array $moreThanOneTypeAccepted,
+        ClassThatDoesNotDefineMethods $classWithoutMethods,
+        ClassThatDoesDefineMethods $classWithMethods,
+        null|bool|int $nullableParameter,
+    ): void
+    {
+    }
+}
