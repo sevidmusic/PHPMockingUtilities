@@ -182,6 +182,169 @@ trait MockClassInstanceTestTrait
         );
     }
 
+    /**
+     * Test that the mockMethodArguments() method returns an array
+     * of mock arguments for the specified method of the class
+     * or object instance reflected by the Reflection assigned
+     * to the MockClassInstance.
+     *
+     * @covers MockClassInstance->mockInstance()
+     *
+     */
+    public function testMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectTypeForTheSpecifiedMethodOfTheClassOrObjectInstanceReflectedByTheReflectionAssignedToTheMockClassInstance(): void
+    {
+        $methodNames = $this->expectedMethodNames();
+        match(empty($methodNames)) {
+            true =>
+                $this->assertMockMethodArgumentsReturnsOneOfTheEmptyArrayIf(
+                    'the class does not define any methods'
+                ),
+            default => $this->assertMockMethodArgumentsReturnsAnAppropriateArrayOfMockArgumentValuesForTheSpecifiedMethod(
+                    $this->randomMethodName()
+                )
+        };
+
+    }
+
+    /**
+     * Assert that mockMethodArguments() returns an appropriate array
+     * of mock arguments for the specified method of the class or
+     * object instance reflected by the Reflection assigned to the
+     * MockClassInstance being tested..
+     *
+     * If the method does not define any parameters this method will
+     * assert that mockMethodArguments() returns an empty array.
+     *
+     * If the method does define parameters, then this method will
+     * assert that mockMethodArguments() returns an array of
+     * mock argument of the appropriate type.
+     *
+     * @param string $methodName The name of the method.
+     *
+     * @return void
+     *
+     * @example
+     *
+     * ```
+     * $this->assertMockMethodArgumentsReturnsAnAppropriateArrayOfMockArgumentValuesForTheSpecifiedMethod()
+     *
+     * ```
+     *
+     */
+    private function assertMockMethodArgumentsReturnsAnAppropriateArrayOfMockArgumentValuesForTheSpecifiedMethod(
+        string $methodName
+    ): void
+    {
+        $expectedArgumentTypes = $this->expectedArgumentTypes($methodName);
+        match(empty($expectedArgumentTypes)) {
+            true =>
+                $this->assertMockMethodArgumentsReturnsOneOfTheEmptyArrayIf(
+                    'the specified method does not expect any ' .
+                    'arguments'
+                ),
+                default => $this->assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
+                    $methodName,
+                    $expectedArgumentTypes
+                ),
+        };
+    }
+
+    /**
+     * Assert that mockMethodArguments() returns an array of mock
+     * arguments of the correct type.
+     *
+     * @param string $methodName  The name of the method.
+     *
+     * @param array<string, array<int, string>> $expectedArgumentTypes
+     *                                          An array of the
+     *                                          methods expected
+     *                                          argument types.
+     *
+     * @example
+     *
+     * ```
+     * $this->assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
+     *     $methodName,
+     *     $expectedArgumentTypes
+     * ),
+     *
+     * ```
+     *
+     */
+    private function assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
+        string $methodName,
+        array $expectedArgumentTypes
+    ): void
+    {
+        $mockArguments = $this->mockClassInstanceTestInstance()
+                              ->mockMethodArguments($methodName);
+        $this->assertNotEmpty(
+            $mockArguments,
+            $this->testFailedMessage(
+                $this->mockClassInstanceTestInstance(),
+                'mockMethodArguments',
+                'return an non-empty array if the ' .
+                'specified method expects arguments'
+            )
+        );
+        foreach(
+           $mockArguments
+             as
+             $parameterName => $mockArgument
+        ) {
+            $this->assertMockArgumentsTypeMatchesOneOfTheExpectedTypes(
+                $mockArgument,
+                $expectedArgumentTypes[$parameterName]
+            );
+        }
+    }
+
+    /**
+     * Assert that the specified value's type matches one of the
+     * types in the specified array of $expectedArgumentTypes.
+     *
+     * @param mixed $mockArgument The mock argument's value.
+     * @param array<int, string> $expectedArgumentTypes An array of
+     *                                                  the accepted
+     *                                                  types.
+     *
+     *
+     * @return void
+     *
+     * @example
+     *
+     * ```
+     * $this->assertMockArgumentsTypeMatchesOneOfTheExpectedTypes(
+     *     $mockArgument,
+     *     $expectedArgumentTypes[$parameterName]
+     * );
+     *
+     * ```
+     *
+     */
+    private function assertMockArgumentsTypeMatchesOneOfTheExpectedTypes(
+        mixed $mockArgument,
+        array $expectedArgumentTypes
+    ): void
+    {
+        $this->assertTrue(
+            in_array(
+                $this->determineType($mockArgument),
+                $expectedArgumentTypes,
+                true
+            ),
+            $this->testFailedMessage(
+                $this->mockClassInstanceTestInstance(),
+                'mockMethodArguments',
+                'return an array of mock arguments of ' .
+                'the correct type for the specified ' .
+                'method of the class or object ' .
+                'instance reflected by the ' .
+                'Reflection assigned to the ' .
+                'MockClassInstance'
+            )
+        );
+    }
 
     /**
      * Assert that the mockMethodArguments() method returns an
@@ -192,11 +355,14 @@ trait MockClassInstanceTestTrait
      * @example
      *
      * ```
+     * $this->assertMockMethodArgumentsReturnsOneOfTheEmptyArrayIf(
+     *     'reason mockMethodArguments() should return an empty array'
+     * );
      *
      * ```
      *
      */
-    private function assertMockMethodArgumentsReturnsAnEmptyArrayIf(string $reason): void
+    private function assertMockMethodArgumentsReturnsOneOfTheEmptyArrayIf(string $reason): void
     {
         $this->assertEmpty(
             $this->mockClassInstanceTestInstance()->mockMethodArguments(''),
@@ -209,89 +375,150 @@ trait MockClassInstanceTestTrait
     }
 
     /**
-     * Test that the mockMethodArguments() method returns an array
-     * of mock arguments for the specified method of the class
-     * or object instance reflected by the Reflection assigned
-     * to the MockClassInstance.
+     * Determine the type of the specified value.
      *
-     * @covers MockClassInstance->mockInstance()
+     * @return string
+     *
+     * @example
+     *
+     * ```
+     * var_dump(determineType(mixed $value));
+     *
+     * // example output:
+     * string(3) "int"
+     *
+     * ```
      *
      */
-    public function testMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectTypeForTheSpecifiedMethodOfTheClassOrObjectInstanceReflectedByTheReflectionAssignedToTheMockClassInstance(): void
+    private function determineType(mixed $value): string
     {
-        $methodNames = $this->mockClassInstanceTestInstance()
-                            ->reflection()
-                            ->methodNames();
-        if(empty($methodNames)) {
-            $this->assertMockMethodArgumentsReturnsAnEmptyArrayIf(
-                'the class does not define any methods'
-            );
-        }
-        if(!empty($methodNames)) {
-            $methodName = $methodNames[array_rand($methodNames)];
-            $expectedArgumentTypes =
-                $this->mockClassInstanceTestInstance()
-                     ->reflection()
-                     ->methodParameterTypes($methodName);
-            if(empty($expectedArgumentTypes)) {
-                $this->assertMockMethodArgumentsReturnsAnEmptyArrayIf(
-                    'the specified method does not expect any arguments'
-                );
-            }
-            $mockArguments = $this->mockClassInstanceTestInstance()
-                                  ->mockMethodArguments($methodName);
-            if(
-                !empty($expectedArgumentTypes)
-                &&
-                empty($mockArguments)
-            ) {
-                $this->assertNotEmpty(
-                    $mockArguments,
-                    $this->testFailedMessage(
-                        $this->mockClassInstanceTestInstance(),
-                        'mockMethodArguments',
-                        'return an non-empty array if the ' .
-                        'specified method expects arguments'
-                    )
-                );
-            }
-            if(!empty($expectedArgumentTypes)) {
-                foreach(
-                   $mockArguments
-                     as
-                     $name => $mockArgument
-                ) {
-                    $type = (
-                        is_object($mockArgument)
-                        ? $mockArgument::class
-                        : str_replace(
-                            [
-                                'integer',
-                                'boolean',
-                            ],
-                            [
-                                'int',
-                                'bool',
-                            ],
-                            gettype($mockArgument))
-                    );
-                    $this->assertTrue(
-                        in_array($type, $expectedArgumentTypes[$name], true),
-                        $this->testFailedMessage(
-                            $this->mockClassInstanceTestInstance(),
-                            'mockMethodArguments',
-                            'return an array of mock arguments of ' .
-                            'the correct type for the specified ' .
-                            'method of the class or object ' .
-                            'instance reflected by the ' .
-                            'Reflection assigned to the ' .
-                            'MockClassInstance'
-                        )
-                    );
-                }
-            }
-        }
+        return
+            is_object($value)
+            ? $value::class
+            : str_replace(
+                [ 'integer', 'boolean', ],
+                [ 'int', 'bool', ],
+                gettype($value)
+        );
+    }
 
+    /**
+     * Returns an associatively indexed array of numerically
+     * indexed arrays of strings indicating the types accepted
+     * by the parameters expected by the specified method of the
+     * class or object instance reflected by the Reflection assigned
+     * to the MockClassInstance being tested.
+     *
+     * The arrays of strings indicating the types accepted by each
+     * parameter will be indexed by the name of the parameter they
+     * are associated with.
+     *
+     * @param string $methodName The name of method.
+     *
+     * @return array<string, array<int, string>>
+     *
+     * @example
+     *
+     * ```
+     * var_dump($reflection->type()->__toString());
+     *
+     * // example output:
+     * string(59) "Darling\PHPReflectionUtilities\classes\utilities\Reflection"
+     *
+     * var_dump($reflection->methodParameterTypes('methodParameterTypes'));
+     *
+     * // example output:
+     * array(1) {
+     *   ["method"]=>
+     *   array(1) {
+     *     [0]=>
+     *     string(6) "string"
+     *   }
+     * }
+     *
+     * ```
+     */
+    private function expectedArgumentTypes($methodName): array
+    {
+        return $this->mockClassInstanceTestInstance()
+                    ->reflection()
+                    ->methodParameterTypes($methodName);
+    }
+
+    /**
+     * Return a randomly selected name of a method defined by the
+     * class or object instance reflected by the Reflection assigned
+     * to the MockClassInstance being tested.
+     *
+     * @return string
+     *
+     * @example
+     *
+     * ```
+     * $this->randomMethodName();
+     *
+     * ```
+     *
+     */
+    private function randomMethodName(): string
+    {
+        $methodNames = $this->expectedMethodNames();
+        if(!empty($methodNames)) {
+            return $methodNames[array_rand($methodNames)];
+        }
+        return '';
+    }
+
+    /**
+     * Return a numerically indexed array of the names of the
+     * methods defined by the class or object instance reflected
+     * by the Reflection assigned to the MockClassInstance being
+     * tested.
+     *
+     * @return array<int, string>
+     *
+     * @example
+     *
+     * ```
+     * $reflection = ;
+     * var_dump(
+     *     $this->mockClassInstance()
+     *          ->reflection()
+     *          ->type()
+     *          ->__toString(),
+     * );
+     *
+     * // example output:
+     * string(59) "Darling\PHPReflectionUtilities\classes\utilities\Reflection"
+     *
+     * var_dump($this->methodNames());
+     *
+     * // example output:
+     * array(7) {
+     *   [0]=>
+     *   string(11) "__construct"
+     *   [1]=>
+     *   string(11) "methodNames"
+     *   [2]=>
+     *   string(20) "methodParameterNames"
+     *   [3]=>
+     *   string(20) "methodParameterTypes"
+     *   [4]=>
+     *   string(13) "propertyNames"
+     *   [5]=>
+     *   string(13) "propertyTypes"
+     *   [6]=>
+     *   string(4) "type"
+     * }
+     *
+     * ```
+     *
+     */
+    public function expectedMethodNames(): array
+    {
+        return $this->mockClassInstanceTestInstance()
+             ->reflection()
+             ->methodNames();
     }
 }
 
