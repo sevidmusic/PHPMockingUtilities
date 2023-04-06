@@ -235,7 +235,9 @@ trait MockClassInstanceTestTrait
         string $methodName
     ): void
     {
-        $expectedArgumentTypes = $this->expectedArgumentTypes($methodName);
+        $expectedArgumentTypes = $this->expectedArgumentTypes(
+            $methodName
+        );
         match(empty($expectedArgumentTypes)) {
             true =>
                 $this->assertMockMethodArgumentsReturnsOneOfTheEmptyArrayIf(
@@ -362,10 +364,13 @@ trait MockClassInstanceTestTrait
      * ```
      *
      */
-    private function assertMockMethodArgumentsReturnsOneOfTheEmptyArrayIf(string $reason): void
+    private function assertMockMethodArgumentsReturnsOneOfTheEmptyArrayIf(
+        string $reason
+    ): void
     {
         $this->assertEmpty(
-            $this->mockClassInstanceTestInstance()->mockMethodArguments(''),
+            $this->mockClassInstanceTestInstance()
+                 ->mockMethodArguments(''),
             $this->testFailedMessage(
                 $this->mockClassInstanceTestInstance(),
                 'mockMethodArguments',
