@@ -341,7 +341,11 @@ trait MockClassInstanceTestTrait
          *
          */
         if(in_array(Stringable::class, $expectedArgumentTypes)) {
-            if(in_array(Stringable::class, class_implements($mockArgument))) {
+            if(
+                is_object($mockArgument)
+                &&
+                in_array(Stringable::class, class_implements($mockArgument))
+            ) {
                 array_push($expectedArgumentTypes, $mockArgument::class);
             }
         }

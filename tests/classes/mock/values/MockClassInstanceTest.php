@@ -96,7 +96,6 @@ class ClassThatDoesDefineMethods
      *
      */
     public function methodWithArguments(
-        /*
         string $string,
         int $int,
         bool $bool,
@@ -109,9 +108,8 @@ class ClassThatDoesDefineMethods
         null|bool|int $nullableParameter,
         ClassThatDoesDefineMethods $classThatDoesDefineMethods,
         \Darling\PHPTextTypes\classes\strings\Id $id,
-*/
         Stringable $stringable,
-        #mixed ...$mixedVariadic,
+        mixed ...$mixedVariadic,
     ): void
     {
     }
