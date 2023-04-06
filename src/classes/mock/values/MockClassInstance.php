@@ -345,16 +345,45 @@ class MockClassInstance implements MockClassInstanceInterface
     ): void
     {
         /**
-         * For unknown types check if $class matches an
-         * existing class, if so, assign an instance of
-         * that class.
+         * Note:
+         *
+         * It is not normally possible to mock an interface or
+         * abstract class since they can not be instantiated.
+         *
+         * However, Darling libraries use a naming convention for
+         * their namespaces that allows this to be overcome.
+         *
+         * By modifying $class so the words 'interfaces' and
+         * 'abstractions' are replaced by the word 'classes'
+         * the correct class can be mocked when a type accepts
+         * an instance of a Darling interface or abstract class.
+         *
+         * THIS ONLY APPLIES TO CLASSES DEFINED BY DARLING LIBRARIES.
+         *
+         * Attempts to mock any other interface or abstract class
+         * will most likely fail unless they happen to use a
+         * namespace that follows one of the following naming
+         * patterns:
+         *
+         * ```
+         * namespace Darling\...\interfaces\...\InterfaceName
+         * namespace Darling\...\abstractions\...\AbstractClassName
+         *
+         * ```
+         *
          * @var class-string<object> $class
          */
-        $class = '\\' . str_replace(
-            ['interfaces'],
-            ['classes'],
-            $class
-        );
+        if(substr($class, 0, 7) === 'Darling') {
+            $class = '\\' . str_replace(
+                ['interfaces', 'abstractions'],
+                ['classes'],
+                $class
+            );
+        }
+        /**
+         * If $class matches an existing class assign an instance of
+         * that class to the $values array under the specified $index.
+         */
         if(class_exists($class)) {
             $values[$index] = $this->getClassInstance(
                 $class

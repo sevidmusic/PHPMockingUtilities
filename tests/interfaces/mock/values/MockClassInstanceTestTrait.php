@@ -331,22 +331,29 @@ trait MockClassInstanceTestTrait
     ): void
     {
         /**
-         * If the parameter accepts a Stringable and the $mockArgument
-         * implements Stringable add the $mockArgument::class to
-         * the array of $expectedArgumentTypes.
+         * If the parameter is an object, determine if any
+         * of the types it implements are one of the
+         * $expectedArgumentTypes.
          *
          * This prevents a false positive in the tests that was
-         * occuring when parameters that accept 'Stringable' were
-         * targeted during testing.
+         * occuring when parameters that accept an implementation
+         * of an interface or abstract class were targeted during
+         * testing.
          *
          */
-        if(in_array(Stringable::class, $expectedArgumentTypes)) {
-            if(
-                is_object($mockArgument)
-                &&
-                in_array(Stringable::class, class_implements($mockArgument))
-            ) {
-                array_push($expectedArgumentTypes, $mockArgument::class);
+        /// in_array(Stringable::class, class_implements($mockArgument))
+        if(
+            is_object($mockArgument)
+        ) {
+            foreach(class_implements($mockArgument) as $implementedType) {
+                if(
+                    in_array(
+                        $implementedType,
+                        $expectedArgumentTypes
+                    )
+                ) {
+                    array_push($expectedArgumentTypes, $mockArgument::class);
+                }
             }
         }
         /**

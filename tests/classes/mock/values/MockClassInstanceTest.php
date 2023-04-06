@@ -5,8 +5,12 @@ namespace Darling\PHPMockingUtilities\tests\classes\mock\values;
 use Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance;
 use Darling\PHPMockingUtilities\tests\PHPMockingUtilitiesTest;
 use Darling\PHPMockingUtilities\tests\interfaces\mock\values\MockClassInstanceTestTrait;
-use \Darling\PHPReflectionUtilities\classes\utilities\Reflection;
-use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
+use Darling\PHPReflectionUtilities\classes\utilities\Reflection;
+use Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
+use Darling\PHPTextTypes\classes\strings\Name;
+use Darling\PHPTextTypes\interfaces\strings\Name as NameInterface;
+use Darling\PHPTextTypes\classes\strings\Text;
+use Darling\PHPTextTypes\interfaces\strings\Text as TextInterface;
 use \ReflectionClass;
 use \Stringable;
 
@@ -58,7 +62,18 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
     {
         /** @var array<int, class-string|object> $classes */
         $classes = [
+            ClassThatDoesNotDefineMethods::class,
+            new ClassThatDoesNotDefineMethods(),
+            ClassThatDoesDefineMethods::class,
             new ClassThatDoesDefineMethods(),
+            ClassThatExtendsAbstractClass::class,
+            new ClassThatExtendsAbstractClass($this->randomChars()),
+            Text::class,
+            new Text($this->randomChars()),
+            new Name(new Text($this->randomChars())),
+            Name::class,
+            NameInterface::class,
+            TextInterface::class,
         ];
         return $classes[array_rand($classes)];
     }
@@ -72,14 +87,8 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
  *
  */
 
-class ClassThatDoesNotDefineMethods
+interface InterfaceForClass
 {
-
-}
-
-class ClassThatDoesDefineMethods
-{
-
     /**
      * A method that expects arguments.
      *
@@ -96,21 +105,117 @@ class ClassThatDoesDefineMethods
      *
      */
     public function methodWithArguments(
+        ClassThatDoesDefineMethods $classThatDoesDefineMethods,
+        ClassThatDoesNotDefineMethods $classThatDoesNotDefineMethods,
+        Stringable $stringable,
+        \Closure $closure,
+        \Darling\PHPTextTypes\classes\strings\Id $id,
+        \Darling\PHPTextTypes\interfaces\strings\Text $text,
+        array $array,
+        bool $bool,
+        float $float,
+        int $int,
+        mixed $mixed,
+        null|bool|int $nullableParameter,
+        object $object, # fails
+        string $string,
+        string|array $moreThanOneTypeAccepted,
+        mixed ...$mixedVariadic,
+    ): void;
+}
+
+abstract class AbstractClassThatImplementsAndInterface implements InterfaceForClass
+{
+
+    public function __construct(public string $stringProperty) {}
+
+    abstract public function methodWithArguments(
+        ClassThatDoesDefineMethods $classThatDoesDefineMethods,
+        ClassThatDoesNotDefineMethods $classThatDoesNotDefineMethods,
+        Stringable $stringable,
+        \Closure $closure,
+        \Darling\PHPTextTypes\classes\strings\Id $id,
+        \Darling\PHPTextTypes\interfaces\strings\Text $text,
+        array $array,
+        bool $bool,
+        float $float,
+        int $int,
+        mixed $mixed,
+        null|bool|int $nullableParameter,
+        object $object, # fails
+        string $string,
+        string|array $moreThanOneTypeAccepted,
+        mixed ...$mixedVariadic,
+    ): void;
+
+}
+
+class ClassThatExtendsAbstractClass extends AbstractClassThatImplementsAndInterface implements InterfaceForClass
+{
+    public function methodWithArguments(
+        ClassThatDoesDefineMethods $classThatDoesDefineMethods,
+        ClassThatDoesNotDefineMethods $classThatDoesNotDefineMethods,
+        Stringable $stringable,
+        \Closure $closure,
+        \Darling\PHPTextTypes\classes\strings\Id $id,
+        \Darling\PHPTextTypes\interfaces\strings\Text $text,
+        array $array,
+        bool $bool,
+        float $float,
+        int $int,
+        mixed $mixed,
+        null|bool|int $nullableParameter,
+        object $object, # fails
+        string $string,
+        string|array $moreThanOneTypeAccepted,
+        mixed ...$mixedVariadic,
+    ): void {}
+}
+
+class ClassThatDoesDefineMethods
+{
+/*
+ * These fail, types that indicate an interface or abstract class
+ * cause failure.
+ *
+ * This does not apply to interfaces defined by Darling libraries
+ * since they follow a namespace naming pattern that is accommodated
+ * by the PHPMockingUtilities library.
+ *
+ * @todo
+ * There may not be a way around this, the documentation must
+ * point this out, and there should be tests defined to determine
+ * hose interfaces and abstract class types are handled.
+ *
+    public function acceptsImplementationOfInterface(
+        InterfaceForClass $acceptsImplementationOfInterface, # fails
+    ): void {}
+
+    public function acceptsImplementationOfAbstractClass(
+       AbstractClassThatImplementsAndInterface $acceptsImplementationOfAbstractClass, #fails
+    ): void {}
+ */
+    public function acceptsVariousTypes(
         string $string,
         int $int,
         bool $bool,
         float $float,
-        array $array,
         \Closure $closure,
         object $object, # fails
         mixed $mixed,
-        string|array $moreThanOneTypeAccepted,
         null|bool|int $nullableParameter,
         ClassThatDoesDefineMethods $classThatDoesDefineMethods,
         \Darling\PHPTextTypes\classes\strings\Id $id,
+        \Darling\PHPTextTypes\interfaces\strings\Text $text,
+        ClassThatDoesNotDefineMethods $classThatDoesNotDefineMethods,
         Stringable $stringable,
         mixed ...$mixedVariadic,
     ): void
     {
     }
+}
+
+class ClassThatDoesNotDefineMethods
+{
+
 }
