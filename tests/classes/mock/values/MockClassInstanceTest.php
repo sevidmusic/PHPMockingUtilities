@@ -8,6 +8,7 @@ use Darling\PHPMockingUtilities\tests\interfaces\mock\values\MockClassInstanceTe
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
 use \ReflectionClass;
+use \Stringable;
 
 class MockClassInstanceTest extends PHPMockingUtilitiesTest
 {
@@ -95,6 +96,7 @@ class ClassThatDoesDefineMethods
      *
      */
     public function methodWithArguments(
+        /*
         string $string,
         int $int,
         bool $bool,
@@ -107,7 +109,9 @@ class ClassThatDoesDefineMethods
         null|bool|int $nullableParameter,
         ClassThatDoesDefineMethods $classThatDoesDefineMethods,
         \Darling\PHPTextTypes\classes\strings\Id $id,
-        mixed ...$mixedVariadic,
+*/
+        Stringable $stringable,
+        #mixed ...$mixedVariadic,
     ): void
     {
     }

@@ -256,6 +256,10 @@ class MockClassInstance implements MockClassInstanceInterface
                         $defaults[$name] = $this->mockClosure();
                         continue;
                     }
+                    if($type === \Stringable::class) {
+                        $defaults[$name] = new MockString();
+                        continue;
+                    }
                     if ($type === self::BOOLEAN) {
                         $defaults[$name] = $this->mockBool();
                         continue;

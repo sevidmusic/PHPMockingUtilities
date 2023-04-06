@@ -5,6 +5,7 @@ namespace Darling\PHPMockingUtilities\tests\interfaces\mock\values;
 use Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection;
 use \ReflectionClass;
+use \Stringable;
 
 /**
  * The MockClassInstanceTestTrait defines common tests for
@@ -330,6 +331,21 @@ trait MockClassInstanceTestTrait
     ): void
     {
         /**
+         * If the parameter accepts a Stringable and the $mockArgument
+         * implements Stringable add the $mockArgument::class to
+         * the array of $expectedArgumentTypes.
+         *
+         * This prevents a false positive in the tests that was
+         * occuring when parameters that accept 'Stringable' were
+         * targeted during testing.
+         *
+         */
+        if(in_array(Stringable::class, $expectedArgumentTypes)) {
+            if(in_array(Stringable::class, class_implements($mockArgument))) {
+                array_push($expectedArgumentTypes, $mockArgument::class);
+            }
+        }
+        /**
          * If parameter accepts 'mixed' add the $mockArgument's determined
          * type to the array of $expectedArgumentTypes since the
          * $expectedArgumentTypes array may contain the 'mixed' type
@@ -337,7 +353,7 @@ trait MockClassInstanceTestTrait
          * though any type is valid.
          *
          * This prevents a false positive in the tests that was
-         * occuring when parameters that accepted 'mixed' were
+         * occuring when parameters that accept 'mixed' were
          * targeted during testing.
          *
          */
@@ -353,7 +369,7 @@ trait MockClassInstanceTestTrait
          * parameter's accpeted types includes 'object'.
          *
          * This prevents a false positive in the tests that was
-         * occuring when parameters that accepted 'mixed' were
+         * occuring when parameters that accept 'mixed' were
          * targeted
          */
         if(in_array('object', $expectedArgumentTypes)) {
