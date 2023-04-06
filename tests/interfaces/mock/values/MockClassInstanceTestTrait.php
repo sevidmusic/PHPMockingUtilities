@@ -252,8 +252,8 @@ trait MockClassInstanceTestTrait
     }
 
     /**
-     * Assert that mockMethodArguments() returns an array of mock
-     * arguments of the correct type.
+     * Assert that mockMethodArguments() returns a non empty array of
+     * mock arguments of the correct type.
      *
      * @param string $methodName  The name of the method.
      *
@@ -329,6 +329,36 @@ trait MockClassInstanceTestTrait
         array $expectedArgumentTypes
     ): void
     {
+        /**
+         * If parameter accepts 'mixed' add the $mockArgument's determined
+         * type to the array of $expectedArgumentTypes since the
+         * $expectedArgumentTypes array may contain the 'mixed' type
+         * but may not contain the $mockArgument's actual type even
+         * though any type is valid.
+         *
+         * This prevents a false positive in the tests that was
+         * occuring when parameters that accepted 'mixed' were
+         * targeted during testing.
+         *
+         */
+        if(in_array('mixed', $expectedArgumentTypes)) {
+            array_push($expectedArgumentTypes, $this->determineType($mockArgument));
+        }
+        /**
+         * If parameter accepts 'object' add stdClass::class to
+         * the array of $expectedArgumentTypes since the
+         * $expectedArgumentTypes array may contain the
+         * 'object' type but may not contain stdClass::class
+         * even though stdClass::class is valid if the
+         * parameter's accpeted types includes 'object'.
+         *
+         * This prevents a false positive in the tests that was
+         * occuring when parameters that accepted 'mixed' were
+         * targeted
+         */
+        if(in_array('object', $expectedArgumentTypes)) {
+            array_push($expectedArgumentTypes, \stdClass::class);
+        }
         $this->assertTrue(
             in_array(
                 $this->determineType($mockArgument),
@@ -397,12 +427,26 @@ trait MockClassInstanceTestTrait
      */
     private function determineType(mixed $value): string
     {
+        /**
+         * String replacements are to insure consistency.
+         *
+         * For example:
+         *
+         * gettype() will return the string 'double' for a float.
+         *
+         * Hpwever, Reflection->methodParameterTypes() uses the
+         * string 'float' to indicate a float, so to insure there
+         * are not false positives that trigger a failing test,
+         * we need to insure determineType() returns a string that
+         * will match one of the strings used to indicate type in
+         * the array returned by Reflection->methodParameterTypes().
+         */
         return
             is_object($value)
             ? $value::class
             : str_replace(
-                [ 'integer', 'boolean', ],
-                [ 'int', 'bool', ],
+                [ 'integer', 'boolean', 'double'],
+                [ 'int', 'bool', 'float'],
                 gettype($value)
         );
     }

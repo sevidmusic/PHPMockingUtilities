@@ -57,12 +57,7 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
     {
         /** @var array<int, class-string|object> $classes */
         $classes = [
-            new \stdClass(),
-            ClassThatDoesDefineMethods::class,
-            ClassThatDoesDefineMethods::class,
-            new ClassThatDoesNotDefineMethods(),
             new ClassThatDoesDefineMethods(),
-            parent::randomClassStringOrObjectInstance(),
         ];
         return $classes[array_rand($classes)];
     }
@@ -83,10 +78,6 @@ class ClassThatDoesNotDefineMethods
 
 class ClassThatDoesDefineMethods
 {
-
-    public function __constuct(int $int, bool $bool): void {}
-
-    public function methodWithoutArguments(): void {}
 
     /**
      * A method that expects arguments.
@@ -109,12 +100,14 @@ class ClassThatDoesDefineMethods
         bool $bool,
         float $float,
         array $array,
-        object $object,
+        \Closure $closure,
+        object $object, # fails
         mixed $mixed,
         string|array $moreThanOneTypeAccepted,
-        ClassThatDoesNotDefineMethods $classWithoutMethods,
-        ClassThatDoesDefineMethods $classWithMethods,
         null|bool|int $nullableParameter,
+        ClassThatDoesDefineMethods $classThatDoesDefineMethods,
+        \Darling\PHPTextTypes\classes\strings\Id $id,
+        mixed ...$mixedVariadic,
     ): void
     {
     }

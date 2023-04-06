@@ -2,7 +2,16 @@
 
 namespace Darling\PHPMockingUtilities\classes\mock\values;
 
+use Darling\PHPMockingUtilities\classes\mock\values\MockArray;
+use Darling\PHPMockingUtilities\classes\mock\values\MockBool;
+use Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance;
+use Darling\PHPMockingUtilities\classes\mock\values\MockClosure;
+use Darling\PHPMockingUtilities\classes\mock\values\MockFloat;
+use Darling\PHPMockingUtilities\classes\mock\values\MockInt;
+use Darling\PHPMockingUtilities\classes\mock\values\MockMixedValue;
+use Darling\PHPMockingUtilities\classes\mock\values\MockString;
 use Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance as MockClassInstanceInterface;
+use \Closure;
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
 use \Darling\PHPTextTypes\classes\strings\SafeText;
@@ -20,9 +29,12 @@ class MockClassInstance implements MockClassInstanceInterface
     private const BOOLEAN = 'bool';
     private const CONSTRUCT = '__construct';
     private const DOUBLE = 'double';
+    private const FLOAT = 'float';
     private const INTEGER = 'int';
     private const NULL = 'NULL';
     private const STRING = 'string';
+    private const MIXED = 'mixed';
+    private const OBJECT = 'object';
 
      /**
       * Instantiate a new instance of a MockClassInstance.
@@ -240,46 +252,51 @@ class MockClassInstance implements MockClassInstanceInterface
                 $name => $types
             ) {
                 foreach($types as $type) {
+                    if($type === \Closure::class) {
+                        $defaults[$name] = $this->mockClosure();
+                        continue;
+                    }
                     if ($type === self::BOOLEAN) {
-                        $defaults[$name] = false;
+                        $defaults[$name] = $this->mockBool();
                         continue;
                     }
                     if ($type === self::INTEGER) {
-                        $defaults[$name] = 1;
+                        $defaults[$name] = $this->mockInt();
+                        continue;
+                    }
+                    if($type === self::FLOAT) {
+                        $defaults[$name] = $this->mockFloat();
                         continue;
                     }
                     if ($type === self::DOUBLE) {
-                        $defaults[$name] = 1.2345;
+                        $defaults[$name] = $this->mockFloat();
                         continue;
                     }
                     if ($type === self::STRING) {
-                        $defaults[$name] = $defaultText->__toString();
+                        $defaults[$name] = $this->mockString();
                         continue;
                     }
                     if ($type === self::ARRAY) {
-                        $defaults[$name] = [];
+                        $defaults[$name] = $this->mockArray();
+                        continue;
+                    }
+                    if ($type === self::MIXED) {
+                        $defaults[$name] = $this->mockMixedValue();
                         continue;
                     }
                     if ($type === self::NULL) {
                         $defaults[$name] = null;
                         continue;
                     }
-                    /**
-                     * For unknown types check if $type matches an
-                     * existing class, if so, assign an instance of
-                     * that class.
-                     * @var class-string<object> $type
-                     */
-                    $type = '\\' . str_replace(
-                        ['interfaces'],
-                        ['classes'],
-                        $type
-                    );
-                    if(class_exists($type)) {
-                        $defaults[$name] = $this->getClassInstance(
-                            $type
-                        );
+                    if ($type === self::OBJECT) {
+                        $defaults[$name] = new stdClass();
+                        continue;
                     }
+                    $this->attemptToAddAMockInstanceOfTheSpecifiedTypeToArrayUnderTheSpecifiedIndex(
+                        $type,
+                        $name,
+                        $defaults
+                    );
                     if(empty($defaults)) {
                         throw new RuntimeException(
                             self::class .
@@ -299,6 +316,91 @@ class MockClassInstance implements MockClassInstanceInterface
             }
         }
         return $defaults;
+    }
+
+    /**
+     * Attempt to add a mock instance of the specified $class
+     * to the specified array of $values under the specified
+     * $index.
+     *
+     * If an instance of the specified class can not be mocked,
+     * than the array of $values will not be modified.
+     *
+     * @param string $class The expected type.
+     *
+     * @param string $index The index to assign the instance to
+     *                      in the array of $values.
+     *
+     * @param array<mixed> $values The array of values to add the
+     *                             instance to.
+     */
+    private function attemptToAddAMockInstanceOfTheSpecifiedTypeToArrayUnderTheSpecifiedIndex(
+        string $class,
+        string $index,
+        &$values
+    ): void
+    {
+        /**
+         * For unknown types check if $class matches an
+         * existing class, if so, assign an instance of
+         * that class.
+         * @var class-string<object> $class
+         */
+        $class = '\\' . str_replace(
+            ['interfaces'],
+            ['classes'],
+            $class
+        );
+        if(class_exists($class)) {
+            $values[$index] = $this->getClassInstance(
+                $class
+            );
+        }
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    private function mockArray(): array
+    {
+        $mockArray = new MockArray();
+        return $mockArray->value();
+    }
+
+    private function mockString(): string
+    {
+        $mockString = new MockString();
+        return $mockString->value();
+    }
+
+    private function mockBool(): bool
+    {
+        $mockBool = new MockBool();
+        return $mockBool->value();
+    }
+
+    private function mockClosure(): Closure
+    {
+        $mockClosure = new MockClosure();
+        return $mockClosure->value();
+    }
+
+    private function mockFloat(): float
+    {
+        $mockFloat = new MockFloat();
+        return $mockFloat->value();
+    }
+
+    private function mockInt(): int
+    {
+        $mockInt = new MockInt();
+        return $mockInt->value();
+    }
+
+    private function mockMixedValue(): mixed
+    {
+        $mockMixedValue = new MockMixedValue();
+        return $mockMixedValue->value();
     }
 
 }
