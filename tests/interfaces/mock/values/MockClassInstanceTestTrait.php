@@ -197,8 +197,9 @@ trait MockClassInstanceTestTrait
         $methodNames = $this->expectedMethodNames();
         match(empty($methodNames)) {
             true =>
-                $this->assertMockMethodArgumentsReturnsOneOfTheEmptyArrayIf(
-                    'the class does not define any methods'
+                $this->assertMockMethodArgumentsReturnsAnEmptyArrayIf(
+                    'the class does not define any methods',
+                    ''
                 ),
             default => $this->assertMockMethodArgumentsReturnsAnAppropriateArrayOfMockArgumentValuesForTheSpecifiedMethod(
                     $this->randomMethodName()
@@ -241,9 +242,10 @@ trait MockClassInstanceTestTrait
         );
         match(empty($expectedArgumentTypes)) {
             true =>
-                $this->assertMockMethodArgumentsReturnsOneOfTheEmptyArrayIf(
+                $this->assertMockMethodArgumentsReturnsAnEmptyArrayIf(
                     'the specified method does not expect any ' .
-                    'arguments'
+                    'arguments',
+                    $methodName
                 ),
                 default => $this->assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
                     $methodName,
@@ -281,6 +283,7 @@ trait MockClassInstanceTestTrait
     {
         $mockArguments = $this->mockClassInstanceTestInstance()
                               ->mockMethodArguments($methodName);
+        //$this->expectException(\RuntimeException::class);
         $this->assertNotEmpty(
             $mockArguments,
             $this->testFailedMessage(
@@ -341,7 +344,6 @@ trait MockClassInstanceTestTrait
          * testing.
          *
          */
-        /// in_array(Stringable::class, class_implements($mockArgument))
         if(
             is_object($mockArgument)
         ) {
@@ -414,20 +416,22 @@ trait MockClassInstanceTestTrait
      * @example
      *
      * ```
-     * $this->assertMockMethodArgumentsReturnsOneOfTheEmptyArrayIf(
-     *     'reason mockMethodArguments() should return an empty array'
+     * $this->assertMockMethodArgumentsReturnsAnEmptyArrayIf(
+     *     'reason mockMethodArguments() should return an empty array',
+     *     'methodName'
      * );
      *
      * ```
      *
      */
-    private function assertMockMethodArgumentsReturnsOneOfTheEmptyArrayIf(
-        string $reason
+    private function assertMockMethodArgumentsReturnsAnEmptyArrayIf(
+        string $reason,
+        string $methodName
     ): void
     {
         $this->assertEmpty(
             $this->mockClassInstanceTestInstance()
-                 ->mockMethodArguments(''),
+                 ->mockMethodArguments($methodName),
             $this->testFailedMessage(
                 $this->mockClassInstanceTestInstance(),
                 'mockMethodArguments',

@@ -303,17 +303,25 @@ class MockClassInstance implements MockClassInstanceInterface
                     );
                     if(empty($defaults)) {
                         throw new RuntimeException(
+                            PHP_EOL .
+                            PHP_EOL .
                             self::class .
                             ' Error:' .
                             PHP_EOL .
-                            'Failed to mock argument ' .
+                            PHP_EOL .
+                            'Failed to mock argument: $' .
                             $name .
-                            ' of type ' .
+                            PHP_EOL .
+                            PHP_EOL .
+                            'Expected argument type: ' .
                             $type .
-                            ' for method ' .
-                            self::class .
-                            '->' .
-                            $method
+                            PHP_EOL .
+                            PHP_EOL .
+                            'Method: ' .
+                            $method .
+                            '()' .
+                            PHP_EOL .
+                            PHP_EOL
                         );
                     }
                 }
