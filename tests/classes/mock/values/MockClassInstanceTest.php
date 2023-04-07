@@ -64,10 +64,10 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
         $classes = [
             ClassThatDoesNotDefineMethods::class,
             new ClassThatDoesNotDefineMethods(),
-#            ClassThatDoesDefineMethods::class, # fails
-#            new ClassThatDoesDefineMethods(),
-#            ClassThatExtendsAbstractClass::class,
-#            new ClassThatExtendsAbstractClass($this->randomChars()),
+            ClassThatDoesDefineMethods::class, # fails
+            new ClassThatDoesDefineMethods(),
+            ClassThatExtendsAbstractClass::class,
+            new ClassThatExtendsAbstractClass($this->randomChars()),
             Text::class,
             new Text($this->randomChars()),
             new Name(new Text($this->randomChars())),

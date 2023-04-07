@@ -281,6 +281,22 @@ trait MockClassInstanceTestTrait
         array $expectedArgumentTypes
     ): void
     {
+        foreach($expectedArgumentTypes as $argumentName => $acceptedTypes) {
+            foreach($acceptedTypes as $acceptedType) {
+                if(class_exists($acceptedType)) {
+                    $reflectionClass = new \ReflectionClass(
+                        $acceptedType
+                    );
+                    if(
+                        $reflectionClass->isInterface()
+                        ||
+                        $reflectionClass->isAbstract()
+                    ) {
+                        $this->expectException(\RuntimeException::class);
+                    }
+                }
+            }
+        }
         $mockArguments = $this->mockClassInstanceTestInstance()
                               ->mockMethodArguments($methodName);
         //$this->expectException(\RuntimeException::class);
