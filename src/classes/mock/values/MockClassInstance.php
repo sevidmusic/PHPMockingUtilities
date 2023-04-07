@@ -4,7 +4,6 @@ namespace Darling\PHPMockingUtilities\classes\mock\values;
 
 use Darling\PHPMockingUtilities\classes\mock\values\MockArray;
 use Darling\PHPMockingUtilities\classes\mock\values\MockBool;
-use Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance;
 use Darling\PHPMockingUtilities\classes\mock\values\MockClosure;
 use Darling\PHPMockingUtilities\classes\mock\values\MockFloat;
 use Darling\PHPMockingUtilities\classes\mock\values\MockInt;
@@ -243,7 +242,6 @@ class MockClassInstance implements MockClassInstanceInterface
     ): array
     {
         $reflection = new Reflection($this->reflectionClass($class));
-        $defaultText = new SafeText(new Text(self::class . '-DEFAULT_STRING'));
         $defaults = array();
         if(method_exists($class, $method)) {
             foreach (

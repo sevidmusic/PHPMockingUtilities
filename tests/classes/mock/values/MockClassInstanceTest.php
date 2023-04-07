@@ -8,8 +8,8 @@ use Darling\PHPMockingUtilities\tests\interfaces\mock\values\MockClassInstanceTe
 use Darling\PHPReflectionUtilities\classes\utilities\Reflection;
 use Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
 use Darling\PHPTextTypes\classes\strings\Name;
-use Darling\PHPTextTypes\interfaces\strings\Name as NameInterface;
 use Darling\PHPTextTypes\classes\strings\Text;
+use Darling\PHPTextTypes\interfaces\strings\Name as NameInterface;
 use Darling\PHPTextTypes\interfaces\strings\Text as TextInterface;
 use \ReflectionClass;
 use \Stringable;
