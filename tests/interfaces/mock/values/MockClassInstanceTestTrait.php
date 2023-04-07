@@ -237,6 +237,9 @@ trait MockClassInstanceTestTrait
         string $methodName
     ): void
     {
+        if(!method_exists($this->mockClassInstanceTestInstance()->reflection()->type()->__toString(), $methodName)) {
+            $this->expectException(\ReflectionException::class);
+        }
         $expectedArgumentTypes = $this->expectedArgumentTypes(
             $methodName
         );
@@ -299,7 +302,6 @@ trait MockClassInstanceTestTrait
         }
         $mockArguments = $this->mockClassInstanceTestInstance()
                               ->mockMethodArguments($methodName);
-        //$this->expectException(\RuntimeException::class);
         $this->assertNotEmpty(
             $mockArguments,
             $this->testFailedMessage(

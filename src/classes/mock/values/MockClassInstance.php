@@ -54,7 +54,20 @@ class MockClassInstance implements MockClassInstanceInterface
       * @see https://www.php.net/manual/en/class.reflectionclass
       *
       */
-    public function __construct(private ReflectionInterface $reflection) {}
+    public function __construct(private ReflectionInterface $reflection) {
+        $t = $reflection->type()->__toString();
+        $r = $this->reflectionClass($t);
+        if($r->isInterface()) {
+            throw new RuntimeException(
+                'It is not possible to mock an interface'
+            );
+        }
+        if($r->isAbstract()) {
+            throw new RuntimeException(
+                'It is not possible to mock an abstract class'
+            );
+        }
+    }
 
     public function mockMethodArguments(string $method): array
     {
@@ -89,7 +102,6 @@ class MockClassInstance implements MockClassInstanceInterface
       * }
       *
       * ```
-      * @todo Consider refactoring $class to accept Darling\PHPTextTypes\classes\strings\ClassString once https://github.com/sevidmusic/PHPReflectionUtilities/issues/25 is resolved
       *
       */
      private function reflectionClass(
