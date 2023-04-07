@@ -2,7 +2,7 @@
 
 namespace Darling\PHPMockingUtilities\tests\interfaces\mock\values;
 
-use Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance;
+use \Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection;
 use \ReflectionClass;
 use \Stringable;

@@ -2,15 +2,15 @@
 
 namespace Darling\PHPMockingUtilities\tests\classes\mock\values;
 
-use Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance;
-use Darling\PHPMockingUtilities\tests\PHPMockingUtilitiesTest;
-use Darling\PHPMockingUtilities\tests\interfaces\mock\values\MockClassInstanceTestTrait;
-use Darling\PHPReflectionUtilities\classes\utilities\Reflection;
-use Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
-use Darling\PHPTextTypes\classes\strings\Name;
-use Darling\PHPTextTypes\classes\strings\Text;
-use Darling\PHPTextTypes\interfaces\strings\Name as NameInterface;
-use Darling\PHPTextTypes\interfaces\strings\Text as TextInterface;
+use \Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance;
+use \Darling\PHPMockingUtilities\tests\PHPMockingUtilitiesTest;
+use \Darling\PHPMockingUtilities\tests\interfaces\mock\values\MockClassInstanceTestTrait;
+use \Darling\PHPReflectionUtilities\classes\utilities\Reflection;
+use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
+use \Darling\PHPTextTypes\classes\strings\Name;
+use \Darling\PHPTextTypes\classes\strings\Text;
+use \Darling\PHPTextTypes\interfaces\strings\Name as NameInterface;
+use \Darling\PHPTextTypes\interfaces\strings\Text as TextInterface;
 use \ReflectionClass;
 use \Stringable;
 

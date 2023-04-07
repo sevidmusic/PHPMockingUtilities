@@ -2,14 +2,14 @@
 
 namespace Darling\PHPMockingUtilities\classes\mock\values;
 
-use Darling\PHPMockingUtilities\classes\mock\values\MockArray;
-use Darling\PHPMockingUtilities\classes\mock\values\MockBool;
-use Darling\PHPMockingUtilities\classes\mock\values\MockClosure;
-use Darling\PHPMockingUtilities\classes\mock\values\MockFloat;
-use Darling\PHPMockingUtilities\classes\mock\values\MockInt;
-use Darling\PHPMockingUtilities\classes\mock\values\MockMixedValue;
-use Darling\PHPMockingUtilities\classes\mock\values\MockString;
-use Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance as MockClassInstanceInterface;
+use \Darling\PHPMockingUtilities\classes\mock\values\MockArray;
+use \Darling\PHPMockingUtilities\classes\mock\values\MockBool;
+use \Darling\PHPMockingUtilities\classes\mock\values\MockClosure;
+use \Darling\PHPMockingUtilities\classes\mock\values\MockFloat;
+use \Darling\PHPMockingUtilities\classes\mock\values\MockInt;
+use \Darling\PHPMockingUtilities\classes\mock\values\MockMixedValue;
+use \Darling\PHPMockingUtilities\classes\mock\values\MockString;
+use \Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance as MockClassInstanceInterface;
 use \Closure;
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
