@@ -43,8 +43,8 @@ trait MockClassInstanceTestTrait
      * setMockClassInstanceTestInstance() method.
      *
      * This method must also set the Reflection instance that is
-     * expected to be assigned to the MockClassInstance being tested
-     * via the setExpectedReflection() method.
+     * expected to be returned by the MockClassInstance's reflection()
+     * method via the setExpectedReflection() method.
      *
      * This method may also be used to perform any additional setup
      * required by the implementation being tested.
@@ -101,8 +101,8 @@ trait MockClassInstanceTestTrait
     }
 
     /**
-     * Set the Reflection instance that is expected to be assigned
-     * to the MockClassInstance being tested.
+     * Set the Reflection instance that is expected to be returned
+     * by the MockClassInstance's reflection() method.
      *
      * @return void
      *
@@ -124,7 +124,7 @@ trait MockClassInstanceTestTrait
 
     /**
      * Return the Reflection instance that is expected to be
-     * assigned to the MockClassInstance being tested.
+     * returned by the MockClassInstance's reflection() method.
      *
      * @return Reflection
      *
@@ -237,7 +237,15 @@ trait MockClassInstanceTestTrait
         string $methodName
     ): void
     {
-        if(!method_exists($this->mockClassInstanceTestInstance()->reflection()->type()->__toString(), $methodName)) {
+        if(
+            !method_exists(
+                $this->mockClassInstanceTestInstance()
+                     ->reflection()
+                     ->type()
+                     ->__toString(),
+                 $methodName
+            )
+        ) {
             $this->expectException(\ReflectionException::class);
         }
         $expectedArgumentTypes = $this->expectedArgumentTypes(
@@ -250,7 +258,8 @@ trait MockClassInstanceTestTrait
                     'arguments',
                     $methodName
                 ),
-                default => $this->assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
+                default =>
+                    $this->assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
                     $methodName,
                     $expectedArgumentTypes
                 ),
@@ -261,11 +270,11 @@ trait MockClassInstanceTestTrait
      * Assert that mockMethodArguments() returns a non empty array of
      * mock arguments of the correct type.
      *
-     * @param string $methodName  The name of the method.
+     * @param string $methodName The name of the method.
      *
      * @param array<string, array<int, string>> $expectedArgumentTypes
      *                                          An array of the
-     *                                          methods expected
+     *                                          method's expected
      *                                          argument types.
      *
      * @example
@@ -340,7 +349,7 @@ trait MockClassInstanceTestTrait
      * ```
      * $this->assertMockArgumentsTypeMatchesOneOfTheExpectedTypes(
      *     $mockArgument,
-     *     $expectedArgumentTypes[$parameterName]
+     *     $expectedArgumentTypes
      * );
      *
      * ```
@@ -361,6 +370,16 @@ trait MockClassInstanceTestTrait
          * of an interface or abstract class were targeted during
          * testing.
          *
+         * This allows mocking arguents for a method like:
+         *
+         * ```
+         * public function f(\Some\Interface $accetedImplementations)
+         * {
+         *     // ...
+         * }
+         *
+         * ```
+         *
          */
         if(
             is_object($mockArgument)
@@ -376,12 +395,13 @@ trait MockClassInstanceTestTrait
                 }
             }
         }
+
         /**
-         * If parameter accepts 'mixed' add the $mockArgument's determined
-         * type to the array of $expectedArgumentTypes since the
-         * $expectedArgumentTypes array may contain the 'mixed' type
-         * but may not contain the $mockArgument's actual type even
-         * though any type is valid.
+         * If parameter accepts 'mixed' add the $mockArgument's
+         * determined type to the array of $expectedArgumentTypes
+         * since the $expectedArgumentTypes array may contain the
+         * 'mixed' type but may not contain the $mockArgument's
+         * actual type even though any type is valid.
          *
          * This prevents a false positive in the tests that was
          * occuring when parameters that accept 'mixed' were
