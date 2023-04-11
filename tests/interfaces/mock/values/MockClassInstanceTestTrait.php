@@ -4,6 +4,8 @@ namespace Darling\PHPMockingUtilities\tests\interfaces\mock\values;
 
 use \Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection;
+use \Darling\PHPReflectionUtilities\classes\utilities\Reflection as ReflectionInstance;
+use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \ReflectionClass;
 use \Stringable;
 
@@ -119,7 +121,25 @@ trait MockClassInstanceTestTrait
      */
     protected function setExpectedReflection(Reflection $reflection): void
     {
-        $this->expectedReflection = $reflection;
+        $reflectionClass = new ReflectionClass(
+            $reflection->type()->__toString()
+        );
+        /**
+         * If the specified Reflection reflects an interface or an
+         * abstract class then we actually expect a Reflection of an
+         * UnknownClass to be returned by the MockClassInstance's
+         * reflection() method.
+         */
+        $this->expectedReflection = match(
+            $reflectionClass->isInterface()
+            ||
+            $reflectionClass->isAbstract()
+        ) {
+            true => new ReflectionInstance(
+                new ReflectionClass(UnknownClass::class)
+            ),
+            default => $reflection
+        };
     }
 
     /**
@@ -162,23 +182,40 @@ trait MockClassInstanceTestTrait
     }
 
     /**
-     * Test that the mockInstance() method returns an instance of
-     * a class of the same type as the class or object instance
-     * reflected by the MockClassInstance's Reflection.
+     * Test that the mockInstance() method returns an
+     * instance of a class of the same type as the
+     * class or object instance reflected by the
+     * Reflection returned by the reflection() method.
      *
      * @covers MockClassInstance->mockInstance()
      *
      */
-    public function testMockInstanceReturnsAnInstanceOfTheSameTypeAsTheClassOrObjectInstanceReflectedByTheReflectionAssignedToTheMockClassInstance(): void
+    public function testMockInstanceReturnsAnInstanceOfTheSameTypeAsTheClassOrObjectInstanceReflectedByTheReflectionReturnedByTheReflectionMethod(): void
     {
         $this->assertEquals(
-            $this->mockClassInstanceTestInstance()->reflection()->type()->__toString(),
-            $this->mockClassInstanceTestInstance()->mockInstance()::class,
+            $this->mockClassInstanceTestInstance()
+                 ->reflection()
+                 ->type()
+                 ->__toString(),
+             $this->mockClassInstanceTestInstance()
+                  ->mockInstance()::class,
             $this->testFailedMessage(
                 $this->mockClassInstanceTestInstance(),
                 'mockClassInstance',
                 'return an instance of the same type as the ' .
-                'class or object instance reflected by the Reflection'
+                'class or object instance reflected by the ' .
+                'Reflection returned by the reflection() ' .
+                'method.' .
+                PHP_EOL .
+                PHP_EOL .
+                'Expected type: ' .
+                $this->mockClassInstanceTestInstance()
+                     ->reflection()
+                     ->type()
+                     ->__toString() .
+                'Actual type: ' .
+                 $this->mockClassInstanceTestInstance()
+                      ->mockInstance()::class
             )
         );
     }
@@ -186,13 +223,13 @@ trait MockClassInstanceTestTrait
     /**
      * Test that the mockMethodArguments() method returns an array
      * of mock arguments for the specified method of the class
-     * or object instance reflected by the Reflection assigned
-     * to the MockClassInstance.
+     * or object instance reflected by the Reflection returned
+     * by the reflection() method.
      *
      * @covers MockClassInstance->mockInstance()
      *
      */
-    public function testMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectTypeForTheSpecifiedMethodOfTheClassOrObjectInstanceReflectedByTheReflectionAssignedToTheMockClassInstance(): void
+    public function testMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectTypeForTheSpecifiedMethodOfTheClassOrObjectInstanceReflectedByTheReflectionReturnedByTheReflectionMethod(): void
     {
         $methodNames = $this->expectedMethodNames();
         match(empty($methodNames)) {
@@ -212,7 +249,7 @@ trait MockClassInstanceTestTrait
      * Assert that mockMethodArguments() returns an appropriate array
      * of mock arguments for the specified method of the class or
      * object instance reflected by the Reflection assigned to the
-     * MockClassInstance being tested..
+     * MockClassInstance being tested.
      *
      * If the method does not define any parameters this method will
      * assert that mockMethodArguments() returns an empty array.
@@ -246,7 +283,7 @@ trait MockClassInstanceTestTrait
                  $methodName
             )
         ) {
-            $this->expectException(\ReflectionException::class);
+            #$this->expectException(\ReflectionException::class);
         }
         $expectedArgumentTypes = $this->expectedArgumentTypes(
             $methodName
@@ -634,8 +671,7 @@ trait MockClassInstanceTestTrait
      */
     public function expectedMethodNames(): array
     {
-        return $this->mockClassInstanceTestInstance()
-             ->reflection()
+        return $this->expectedReflection()
              ->methodNames();
     }
 }

@@ -13,6 +13,7 @@ use \Darling\PHPTextTypes\interfaces\strings\Name as NameInterface;
 use \Darling\PHPTextTypes\interfaces\strings\Text as TextInterface;
 use \ReflectionClass;
 use \Stringable;
+use \stdClass;
 
 class MockClassInstanceTest extends PHPMockingUtilitiesTest
 {
@@ -62,21 +63,24 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
     {
         /** @var array<int, class-string|object> $classes */
         $classes = [
+            InterfaceForClass::class, # FAILS
 #            ClassThatDoesNotDefineMethods::class,
 #            new ClassThatDoesNotDefineMethods(),
 #            ClassThatDoesDefineMethods::class, # fails
-#            new ClassThatDoesDefineMethods(),
+#            new ClassThatDoesDefineMethods(), # fails
 #            ClassThatExtendsAbstractClass::class,
 #            new ClassThatExtendsAbstractClass($this->randomChars()),
 #            Text::class,
 #            new Text($this->randomChars()),
 #            new Name(new Text($this->randomChars())),
 #            Name::class,
-#            NameInterface::class, # fails occasionally
+#            NameInterface::class,
 #            TextInterface::class,
-            InterfaceForClass::class,
+#            AbstractClassThatImplementsAndInterface::class,
+#            new stdClass(),
+#            stdClass::class
         ];
-        return $classes[array_rand($classes)];
+        return (empty($classes) ? new stdClass() : $classes[array_rand($classes)]);
     }
 }
 

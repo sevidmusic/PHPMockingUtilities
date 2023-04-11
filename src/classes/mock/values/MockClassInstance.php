@@ -55,18 +55,13 @@ class MockClassInstance implements MockClassInstanceInterface
       *
       */
     public function __construct(private ReflectionInterface $reflection) {
-        $t = $reflection->type()->__toString();
-        $r = $this->reflectionClass($t);
-        if($r->isInterface()) {
-            throw new RuntimeException(
-                'It is not possible to mock an interface'
+        $reflectionClass = $this->reflectionClass($reflection->type()->__toString());
+        if($reflectionClass->isAbstract()) {
+            $this->reflection = new Reflection(
+                $this->reflectionClass(UnknownClass::class)
             );
         }
-        if($r->isAbstract()) {
-            throw new RuntimeException(
-                'It is not possible to mock an abstract class'
-            );
-        }
+
     }
 
     public function mockMethodArguments(string $method): array
