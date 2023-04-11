@@ -283,7 +283,11 @@ trait MockClassInstanceTestTrait
                  $methodName
             )
         ) {
-            #$this->expectException(\ReflectionException::class);
+            $this->assertMockMethodArgumentsReturnsAnEmptyArrayIf(
+                'the specified method does exist',
+                $methodName
+            );
+            return;
         }
         $expectedArgumentTypes = $this->expectedArgumentTypes(
             $methodName
