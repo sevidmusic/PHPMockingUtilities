@@ -13,8 +13,6 @@ use \Darling\PHPMockingUtilities\classes\mock\values\MockString;
 use \Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance as MockClassInstanceInterface;
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
-use \Darling\PHPTextTypes\classes\strings\SafeText;
-use \Darling\PHPTextTypes\classes\strings\Text;
 use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \ReflectionClass;
 use \ReflectionException;
@@ -102,20 +100,20 @@ class MockClassInstance implements MockClassInstanceInterface
      private function reflectionClass(
          string|object $class
      ): ReflectionClass
-    {
-        if(
-            class_exists(
-                (
-                    is_object($class)
-                    ? $class::class
-                    : $class
-                )
-            )
-        ) {
-            return new ReflectionClass($class);
-        }
-        return new ReflectionClass(new UnknownClass());
-    }
+     {
+         if(
+             class_exists(
+                 (
+                     is_object($class)
+                     ? $class::class
+                     : $class
+                 )
+             )
+         ) {
+             return new ReflectionClass($class);
+         }
+         return new ReflectionClass(new UnknownClass());
+     }
 
      /**
       * Return a mock instance of the same type as the
@@ -188,29 +186,20 @@ class MockClassInstance implements MockClassInstanceInterface
      ): object
      {
         if (method_exists($class, self::CONSTRUCT) === false) {
-            try {
-                return $this->reflectionClass($class)
-                            ->newInstanceArgs([]);
-            } catch (ReflectionException $e) {
-                return $e;
-            }
+            return $this->reflectionClass($class)
+                        ->newInstanceArgs([]);
         }
-        if (empty($constructorArguments) === true) {
-            try {
-                return $this->reflectionClass($class)
-                            ->newInstanceArgs(
-                                $this->generateMockClassMethodArguments(
-                                    $class,
-                                    self::CONSTRUCT
-                                )
-                );
-            } catch (ReflectionException $e) {
-                return $e;
-            }
-        }
-        return $this->reflectionClass($class)->newInstanceArgs(
-            $constructorArguments
-        );
+        return match(empty($constructorArguments)) {
+            true => $this->reflectionClass($class)
+                        ->newInstanceArgs(
+                            $this->generateMockClassMethodArguments(
+                                $class,
+                                self::CONSTRUCT
+                            )
+                        ),
+            default => $this->reflectionClass($class)
+                            ->newInstanceArgs($constructorArguments),
+        };
     }
 
      /**
