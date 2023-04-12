@@ -29,8 +29,8 @@ class ImplementationOfInterfaceForClassThatDefinesMethods extends AbstractImplem
      *
      */
     public function methodWithArguments(
-        #ClassThatDoesDefineMethods $classThatDoesDefineMethods,
-        #ClassThatDoesNotDefineMethods $classThatDoesNotDefineMethods,
+        AbstractImplementationOfInterfaceForClassThatDefinesMethods $abstractImplementationOfInterfaceForClassThatDefinesMethods,
+        InterfaceForClassThatDefinesMethods $InterfaceForClassThatDefinesMethods,
         \Stringable $stringable,
         \Closure $closure,
         \Darling\PHPTextTypes\classes\strings\Id $id,

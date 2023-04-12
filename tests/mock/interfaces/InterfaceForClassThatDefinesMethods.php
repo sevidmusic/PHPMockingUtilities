@@ -2,6 +2,8 @@
 
 namespace Darling\PHPMockingUtilities\tests\mock\interfaces;
 
+use \Darling\PHPMockingUtilities\tests\mock\abstractions\AbstractImplementationOfInterfaceForClassThatDefinesMethods;
+
 /**
  * The following classes are defined here for use by
  * the MockClassInstanceTest
@@ -26,8 +28,8 @@ interface InterfaceForClassThatDefinesMethods
      *
      */
     public function methodWithArguments(
-        #ClassThatDoesDefineMethods $classThatDoesDefineMethods,
-        #ClassThatDoesNotDefineMethods $classThatDoesNotDefineMethods,
+        AbstractImplementationOfInterfaceForClassThatDefinesMethods $abstractImplementationOfInterfaceForClassThatDefinesMethods,
+        InterfaceForClassThatDefinesMethods $InterfaceForClassThatDefinesMethods,
         \Stringable $stringable,
         \Closure $closure,
         \Darling\PHPTextTypes\classes\strings\Id $id,
