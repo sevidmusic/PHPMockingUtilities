@@ -11,7 +11,7 @@ use \Darling\PHPMockingUtilities\tests\mock\abstractions\AbstractImplementationO
  *
  */
 
-class ImplementationOfInterfaceForClassThatDefinesMethods
+class ImplementationOfInterfaceForClassThatDefinesMethods extends AbstractImplementationOfInterfaceForClassThatDefinesMethods implements InterfaceForClassThatDefinesMethods
 {
     /**
      * A method that expects arguments.

@@ -10,6 +10,6 @@ use \Darling\PHPMockingUtilities\tests\mock\interfaces\InterfaceForClassThatDefi
  *
  */
 
-abstract class AbstractImplementationOfInterfaceForClassThatDefinesMethods
+abstract class AbstractImplementationOfInterfaceForClassThatDefinesMethods implements InterfaceForClassThatDefinesMethods
 {
 }
