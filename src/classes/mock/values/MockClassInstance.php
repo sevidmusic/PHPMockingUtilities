@@ -66,9 +66,6 @@ class MockClassInstance implements MockClassInstanceInterface
 
     public function mockMethodArguments(string $method): array
     {
-        if(!method_exists($method, $this->reflection()->type()->__toString())) {
-            return [];
-        }
         return $this->generateMockClassMethodArguments(
             $this->reflection()->type()->__toString(),
             $method

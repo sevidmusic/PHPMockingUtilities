@@ -64,21 +64,21 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
         /** @var array<int, class-string|object> $classes */
         $classes = [
             InterfaceForClass::class, # FAILS
-#            ClassThatDoesNotDefineMethods::class,
-#            new ClassThatDoesNotDefineMethods(),
-#            ClassThatDoesDefineMethods::class, # fails
-#            new ClassThatDoesDefineMethods(), # fails
-#            ClassThatExtendsAbstractClass::class,
-#            new ClassThatExtendsAbstractClass($this->randomChars()),
-#            Text::class,
-#            new Text($this->randomChars()),
-#            new Name(new Text($this->randomChars())),
-#            Name::class,
-#            NameInterface::class,
-#            TextInterface::class,
-#            AbstractClassThatImplementsAndInterface::class,
-#            new stdClass(),
-#            stdClass::class
+            ClassThatDoesNotDefineMethods::class,
+            new ClassThatDoesNotDefineMethods(),
+            ClassThatDoesDefineMethods::class, # fails
+            new ClassThatDoesDefineMethods(), # fails
+            ClassThatExtendsAbstractClass::class,
+            new ClassThatExtendsAbstractClass($this->randomChars()),
+            Text::class,
+            new Text($this->randomChars()),
+            new Name(new Text($this->randomChars())),
+            Name::class,
+            NameInterface::class,
+            TextInterface::class,
+            AbstractClassThatImplementsAndInterface::class,
+            new stdClass(),
+            stdClass::class
         ];
         return (empty($classes) ? new stdClass() : $classes[array_rand($classes)]);
     }

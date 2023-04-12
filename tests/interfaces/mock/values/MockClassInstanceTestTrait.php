@@ -175,7 +175,7 @@ trait MockClassInstanceTestTrait
             $this->mockClassInstanceTestInstance()->reflection(),
             $this->testFailedMessage(
                 $this->mockClassInstanceTestInstance(),
-                'value',
+                'reflection',
                 'return the expected Reflection'
             )
         );
