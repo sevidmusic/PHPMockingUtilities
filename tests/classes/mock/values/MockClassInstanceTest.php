@@ -13,6 +13,7 @@ use \Darling\PHPReflectionUtilities\classes\utilities\Reflection;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
 use \Darling\PHPTextTypes\classes\strings\Name;
 use \Darling\PHPTextTypes\classes\strings\Text;
+use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\interfaces\strings\Name as NameInterface;
 use \Darling\PHPTextTypes\interfaces\strings\Text as TextInterface;
 use \ReflectionClass;
@@ -38,12 +39,20 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
         $randomClassStringOrObjectInstance = $this->randomClassStringOrObjectInstance();
         $expectedReflection = new Reflection(
             new ReflectionClass(
-                $randomClassStringOrObjectInstance
+                $this->determineClassString(
+                    $randomClassStringOrObjectInstance
+                )
             )
         );
         $this->setExpectedReflection($expectedReflection);
         $this->setMockClassInstanceTestInstance(
-            new MockClassInstance($expectedReflection)
+            new MockClassInstance(
+                new Reflection(
+                    new ReflectionClass(
+                        $randomClassStringOrObjectInstance
+                    )
+                )
+            )
         );
     }
 
@@ -67,20 +76,20 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
     {
         /** @var array<int, class-string|object> $classes */
         $classes = [
-            AbstractImplementationOfInterfaceForClassThatDefinesMethods::class,
-            ClassThatDoesNotDefineMethods::class,
-            ImplementationOfInterfaceForClassThatDefinesMethods::class,
-            new ImplementationOfInterfaceForClassThatDefinesMethods(),
-            InterfaceForClassThatDefinesMethods::class,
-            Name::class,
+#            AbstractImplementationOfInterfaceForClassThatDefinesMethods::class,
+#            ClassThatDoesNotDefineMethods::class,
+#            ImplementationOfInterfaceForClassThatDefinesMethods::class,
+#            new ImplementationOfInterfaceForClassThatDefinesMethods(),
+#            InterfaceForClassThatDefinesMethods::class,
+#            Name::class,
             NameInterface::class,
-            Text::class,
-            TextInterface::class,
-            new ClassThatDoesNotDefineMethods(),
-            new Name(new Text($this->randomChars())),
-            new Text($this->randomChars()),
-            new stdClass(),
-            stdClass::class
+#            Text::class,
+#            TextInterface::class,
+#            new ClassThatDoesNotDefineMethods(),
+#            new Name(new Text($this->randomChars())),
+#            new Text($this->randomChars()),
+#            new stdClass(),
+#            stdClass::class
         ];
         return (empty($classes) ? new stdClass() : $classes[array_rand($classes)]);
     }

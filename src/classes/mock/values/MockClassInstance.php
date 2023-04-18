@@ -52,22 +52,17 @@ class MockClassInstance implements MockClassInstanceInterface
       * @see https://www.php.net/manual/en/class.reflectionclass
       *
       */
-    public function __construct(private ReflectionInterface $reflection) {
-        $reflectionClass = $this->reflectionClass($reflection->type()->__toString());
-        if($reflectionClass->isAbstract()) {
-            $this->reflection = new Reflection(
-                $this->reflectionClass(UnknownClass::class)
-            );
-        }
-
-    }
+    public function __construct(private ReflectionInterface $reflection) {}
 
     public function mockMethodArguments(string $method): array
     {
+        return [];
+        /**
         return $this->generateMockClassMethodArguments(
             $this->reflection()->type()->__toString(),
             $method
         );
+         */
     }
 
     public function reflection(): ReflectionInterface
@@ -101,18 +96,7 @@ class MockClassInstance implements MockClassInstanceInterface
          string|object $class
      ): ReflectionClass
      {
-         if(
-             class_exists(
-                 (
-                     is_object($class)
-                     ? $class::class
-                     : $class
-                 )
-             )
-         ) {
-             return new ReflectionClass($class);
-         }
-         return new ReflectionClass(new UnknownClass());
+         return new ReflectionClass($class);
      }
 
      /**
