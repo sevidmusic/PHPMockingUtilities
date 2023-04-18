@@ -268,6 +268,11 @@ trait MockClassInstanceTestTrait
      * Test that the reflection method returns the expected
      * Reflection.
      *
+     * This test is failing, and will continue to fail till the
+     * following issue is addressed:
+     *
+     * https://github.com/sevidmusic/PHPTextTypes/issues/25
+     *
      * @covers MockClassInstance->reflection()
      *
      */

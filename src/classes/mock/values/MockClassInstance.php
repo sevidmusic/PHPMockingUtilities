@@ -22,17 +22,6 @@ use \stdClass;
 class MockClassInstance implements MockClassInstanceInterface
 {
 
-    private const ARRAY = 'array';
-    private const BOOLEAN = 'bool';
-    private const CONSTRUCT = '__construct';
-    private const DOUBLE = 'double';
-    private const FLOAT = 'float';
-    private const INTEGER = 'int';
-    private const NULL = 'NULL';
-    private const STRING = 'string';
-    private const MIXED = 'mixed';
-    private const OBJECT = 'object';
-
      /**
       * Instantiate a new instance of a MockClassInstance.
       *
@@ -52,17 +41,14 @@ class MockClassInstance implements MockClassInstanceInterface
       * @see https://www.php.net/manual/en/class.reflectionclass
       *
       */
-    public function __construct(private ReflectionInterface $reflection) {}
-
-    public function mockMethodArguments(string $method): array
-    {
-        return [];
-        /**
-        return $this->generateMockClassMethodArguments(
-            $this->reflection()->type()->__toString(),
-            $method
+    public function __construct(private ReflectionInterface $reflection) {
+        $this->reflection = new Reflection(
+            new ReflectionClass(
+                $this->determineClassString(
+                    $reflection->type()->__toString()
+                )
+            )
         );
-         */
     }
 
     public function reflection(): ReflectionInterface
@@ -70,357 +56,139 @@ class MockClassInstance implements MockClassInstanceInterface
         return $this->reflection;
     }
 
-     /**
-      * Return an instance of a ReflectionClass that reflects the
-      * specified class or object instance.
-      *
-      * @param class-string|object $class
-      *
-      * @return ReflectionClass<object>
-      *
-      * @example
-      *
-      * ```
-      * var_dump($this->reflectionClass(new stdClass()));
-      *
-      * // example output:
-      * class ReflectionClass#1 (1) {
-      *   public string $name =>
-      *   string(8) "stdClass"
-      * }
-      *
-      * ```
-      *
-      */
-     private function reflectionClass(
-         string|object $class
-     ): ReflectionClass
-     {
-         return new ReflectionClass($class);
-     }
+    public function mockMethodArguments(string $method): array
+    {
+        return [];
+    }
 
-     /**
-      * Return a mock instance of the same type as the
-      * class or object instance reflected by the
-      * Reflection assigned to the $reflection property.
-      *
-      * If supplied, the specified $constructorArguments will
-      * be passed to the mock instance's constructor.
-      *
-      * @param array<mixed> $constructorArguments
-      *
-      * @return object
-      *
-      * @example
-      *
-      * ```
-      * $mocker = new Mocker(new ObjectReflection(new stdClass()));
-      *
-      * $mockInstance = $mocker->mockInstance();
-      *
-      * var_dump($mockInstance);
-      *
-      * // example output:
-      * class stdClass#38 (0) {
-      * }
-      *
-      * ```
-      *
-      */
+
      public function mockInstance(
          array $constructorArguments = []
      ): object
      {
-         return $this->getClassInstance(
-             $this->reflection->type()->__toString(),
-             $constructorArguments
-         );
+         return $this;
      }
 
-     /**
-      * Return a mock instance of the same type as the
-      * specified class or object instance.
-      *
-      * If supplied, the specified $constructorArguments will
-      * be passed to the mock instance's constructor.
-      *
-      * @param class-string|object $class
-      *
-      * @param array<mixed> $constructorArguments
-      *
-      * @return object
-      *
-      * @example
-      *
-      * ```
-      * $mockInstance = $this->getClassInstance(new stdClass());
-      *
-      * var_dump($mockInstance);
-      *
-      * // example output:
-      * class stdClass#38 (0) {
-      * }
-      *
-      * ```
-      *
-      */
-     private function getClassInstance(
-         string|object $class,
-         array $constructorArguments = []
-     ): object
-     {
-        if (method_exists($class, self::CONSTRUCT) === false) {
-            return $this->reflectionClass($class)
-                        ->newInstanceArgs([]);
-        }
-        return match(empty($constructorArguments)) {
-            true => $this->reflectionClass($class)
-                        ->newInstanceArgs(
-                            $this->generateMockClassMethodArguments(
-                                $class,
-                                self::CONSTRUCT
-                            )
-                        ),
-            default => $this->reflectionClass($class)
-                            ->newInstanceArgs($constructorArguments),
+
+    /**
+     * Return the class string of the specified $class.
+     *
+     * $class may be a class string, or an object instance.
+     *
+     * @return class-string<object>
+     *
+     * @example
+     *
+     * ```
+     * var_dump($this->determineClassString(\stdClass::class);
+     *
+     * // example output:
+     * string(8) "stdClass"
+     *
+     * var_dump($this->determineClassString(new \stdClass());
+     *
+     * // example output:
+     * string(8) "stdClass"
+     *
+     * ```
+     *
+     */
+    protected function determineClassString(string|object $class): string
+    {
+        return match(is_object($class)) {
+            true => $class::class,
+            default => $this->validateClassString($class),
         };
     }
 
-     /**
-      * Generate mock method arguments for the specified method of the
-      * provided class or object instance.
-      *
-      * @param class-string|object $class The class or object instance.
-      *
-      * @param string $method The name of the method to generate
-      *                       arguments for.
-      *
-      * @return array<mixed>
-      *
-      * @example
-      *
-      * ```
-      * //
-      * var_dump(
-      *     $mocker->generateMockClassMethodArguments(
-      *         \Darling\PHPTextTypes\classes\strings\Text::class,
-      *         '__construct'
-      *     )
-      * );
-      *
-      * array(1) {
-      *   'string' =>
-      *   string(21) "Mocker-DEFAULT_STRING"
-      * }
-      *
-      * ```
-      *
-      */
-    private function generateMockClassMethodArguments(
-         string|object $class,
-         string $method
-    ): array
-    {
-        $reflection = new Reflection($this->reflectionClass($class));
-        $defaults = array();
-        if(method_exists($class, $method)) {
-            foreach (
-                $reflection->methodParameterTypes($method)
-                as
-                $name => $types
-            ) {
-                foreach($types as $type) {
-                    if($type === \Closure::class) {
-                        $defaults[$name] = $this->mockClosure();
-                        continue;
-                    }
-                    if($type === \Stringable::class) {
-                        $defaults[$name] = new MockString();
-                        continue;
-                    }
-                    if ($type === self::BOOLEAN) {
-                        $defaults[$name] = $this->mockBool();
-                        continue;
-                    }
-                    if ($type === self::INTEGER) {
-                        $defaults[$name] = $this->mockInt();
-                        continue;
-                    }
-                    if($type === self::FLOAT) {
-                        $defaults[$name] = $this->mockFloat();
-                        continue;
-                    }
-                    if ($type === self::DOUBLE) {
-                        $defaults[$name] = $this->mockFloat();
-                        continue;
-                    }
-                    if ($type === self::STRING) {
-                        $defaults[$name] = $this->mockString();
-                        continue;
-                    }
-                    if ($type === self::ARRAY) {
-                        $defaults[$name] = $this->mockArray();
-                        continue;
-                    }
-                    if ($type === self::MIXED) {
-                        $defaults[$name] = $this->mockMixedValue();
-                        continue;
-                    }
-                    if ($type === self::NULL) {
-                        $defaults[$name] = null;
-                        continue;
-                    }
-                    if ($type === self::OBJECT) {
-                        $defaults[$name] = new stdClass();
-                        continue;
-                    }
-                    $this->attemptToAddAMockInstanceOfTheSpecifiedTypeToArrayUnderTheSpecifiedIndex(
-                        $type,
-                        $name,
-                        $defaults
-                    );
-                    if(empty($defaults)) {
-                        throw new RuntimeException(
-                            PHP_EOL .
-                            PHP_EOL .
-                            self::class .
-                            ' Error:' .
-                            PHP_EOL .
-                            PHP_EOL .
-                            'Failed to mock argument: $' .
-                            $name .
-                            PHP_EOL .
-                            PHP_EOL .
-                            'Expected argument type: ' .
-                            $type .
-                            PHP_EOL .
-                            PHP_EOL .
-                            'Method: ' .
-                            $method .
-                            '()' .
-                            PHP_EOL .
-                            PHP_EOL
-                        );
-                    }
-                }
-            }
-        }
-        return $defaults;
-    }
 
     /**
-     * Attempt to add a mock instance of the specified $class
-     * to the specified array of $values under the specified
-     * $index.
+     * Validate the specified $classString.
      *
-     * If an instance of the specified class can not be mocked,
-     * than the array of $values will not be modified.
+     * If the specified $classString does not correspond to an
+     * existing class, then the class string for an UnknownClass
+     * will be returned.
      *
-     * @param string $class The expected type.
+     * If the $classString corresponds to an interface or abstract
+     * class that is not defined under a Darling namespace, then
+     * the class string for an UnknownClass will be returned.
      *
-     * @param string $index The index to assign the instance to
-     *                      in the array of $values.
+     * If the $classString corresponds to a interface or abstract
+     * class that is defined under a Darling namespace, then it
+     * will be modified to reflect the appropriate Darling class.
      *
-     * @param array<mixed> $values The array of values to add the
-     *                             instance to.
+     * For example, the following $classString:
+     *
+     * ```
+     * Darling\\LibraryName\\interfaces\\Foo\\Bar\\Baz
+     *
+     * ```
+     *
+     * Would be modified to be:
+     *
+     * ```
+     * Darling\\LibraryName\\classes\\Foo\\Bar\\Baz
+     *
+     * ```
+     *
+     * If the specified class string corresponds to an existing
+     * class that is not abstract, then it will be returned
+     * unmodified.
+     *
+     * @return class-string<object>
+     *
+     * @example
+     *
+     * ```
+     * var_dump($this->validateClassString(\stdClass::class);
+     *
+     * // example output:
+     * string(8) "stdClass"
+     *
+     * var_dump(
+     *     $this->validateClassString(
+     *         "Darling\\PHPTextTypes\\interfaces\\strings\\Name"
+     *     )
+     * );
+     *
+     * // example output:
+     * string(41) "Darling\\PHPTextTypes\\classes\\strings\\Name"
+     *
+     * ```
+     *
      */
-    private function attemptToAddAMockInstanceOfTheSpecifiedTypeToArrayUnderTheSpecifiedIndex(
-        string $class,
-        string $index,
-        &$values
-    ): void
+    private function validateClassString(string $classString): string
     {
-        /**
-         * Note:
-         *
-         * It is not normally possible to mock an interface or
-         * abstract class since they can not be instantiated.
-         *
-         * However, Darling libraries use a naming convention for
-         * their namespaces that allows this to be overcome.
-         *
-         * By modifying $class so the words 'interfaces' and
-         * 'abstractions' are replaced by the word 'classes'
-         * the correct class can be mocked when a type accepts
-         * an instance of a Darling interface or abstract class.
-         *
-         * THIS ONLY APPLIES TO CLASSES DEFINED BY DARLING LIBRARIES.
-         *
-         * Attempts to mock any other interface or abstract class
-         * will most likely fail unless they happen to use a
-         * namespace that follows one of the following naming
-         * patterns:
-         *
-         * ```
-         * namespace Darling\...\interfaces\...\InterfaceName
-         * namespace Darling\...\abstractions\...\AbstractClassName
-         *
-         * ```
-         *
-         * @var class-string<object> $class
-         */
-        if(substr($class, 0, 7) === 'Darling') {
-            $class = '\\' . str_replace(
+        if(!interface_exists($classString) && !class_exists($classString)) {
+            return UnknownClass::class;
+        }
+        $this->correctDarlingNamespaces($classString);
+        $reflectionClass = new \ReflectionClass($classString);
+        return match(
+            $reflectionClass->isInterface()
+            ||
+            $reflectionClass->isAbstract()
+        ) {
+            true => UnknownClass::class,
+            default => $classString,
+        };
+    }
+
+    protected function correctDarlingNamespaces(string &$class): void
+    {
+        if(
+            substr($class, 0, 7) === 'Darling'
+            &&
+            !str_contains($class, '\\tests\\')
+            &&
+            $class !== UnknownClass::class
+        ) {
+            $class = str_replace(
                 ['interfaces', 'abstractions'],
-                ['classes'],
-                $class
-            );
-        }
-        /**
-         * If $class matches an existing class assign an instance of
-         * that class to the $values array under the specified $index.
-         */
-        if(class_exists($class)) {
-            $values[$index] = $this->getClassInstance(
+                'classes',
                 $class
             );
         }
     }
-
-    /**
-     * @return array<mixed>
-     */
-    private function mockArray(): array
-    {
-        $mockArray = new MockArray();
-        return $mockArray->value();
-    }
-
-    private function mockString(): string
-    {
-        $mockString = new MockString();
-        return $mockString->value();
-    }
-
-    private function mockBool(): bool
-    {
-        $mockBool = new MockBool();
-        return $mockBool->value();
-    }
-
-    private function mockClosure(): Closure
-    {
-        $mockClosure = new MockClosure();
-        return $mockClosure->value();
-    }
-
-    private function mockFloat(): float
-    {
-        $mockFloat = new MockFloat();
-        return $mockFloat->value();
-    }
-
-    private function mockInt(): int
-    {
-        $mockInt = new MockInt();
-        return $mockInt->value();
-    }
-
-    private function mockMixedValue(): mixed
-    {
-        $mockMixedValue = new MockMixedValue();
-        return $mockMixedValue->value();
-    }
-
 }
 
