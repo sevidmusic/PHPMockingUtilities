@@ -39,19 +39,13 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
         $randomClassStringOrObjectInstance = $this->randomClassStringOrObjectInstance();
         $expectedReflection = new Reflection(
             new ReflectionClass(
-                $this->determineClassString(
-                    $randomClassStringOrObjectInstance
-                )
+                $randomClassStringOrObjectInstance
             )
         );
         $this->setExpectedReflection($expectedReflection);
         $this->setMockClassInstanceTestInstance(
             new MockClassInstance(
-                new Reflection(
-                    new ReflectionClass(
-                        $randomClassStringOrObjectInstance
-                    )
-                )
+                $expectedReflection
             )
         );
     }
@@ -76,20 +70,20 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
     {
         /** @var array<int, class-string|object> $classes */
         $classes = [
-#            AbstractImplementationOfInterfaceForClassThatDefinesMethods::class,
-#            ClassThatDoesNotDefineMethods::class,
-#            ImplementationOfInterfaceForClassThatDefinesMethods::class,
-#            new ImplementationOfInterfaceForClassThatDefinesMethods(),
-#            InterfaceForClassThatDefinesMethods::class,
-#            Name::class,
+            AbstractImplementationOfInterfaceForClassThatDefinesMethods::class,
+            ClassThatDoesNotDefineMethods::class,
+            ImplementationOfInterfaceForClassThatDefinesMethods::class,
+            new ImplementationOfInterfaceForClassThatDefinesMethods(),
+            InterfaceForClassThatDefinesMethods::class,
+            Name::class,
             NameInterface::class,
-#            Text::class,
-#            TextInterface::class,
-#            new ClassThatDoesNotDefineMethods(),
-#            new Name(new Text($this->randomChars())),
-#            new Text($this->randomChars()),
-#            new stdClass(),
-#            stdClass::class
+            Text::class,
+            TextInterface::class,
+            new ClassThatDoesNotDefineMethods(),
+            new Name(new Text($this->randomChars())),
+            new Text($this->randomChars()),
+            new stdClass(),
+            stdClass::class
         ];
         return (empty($classes) ? new stdClass() : $classes[array_rand($classes)]);
     }
