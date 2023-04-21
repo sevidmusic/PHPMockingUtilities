@@ -168,5 +168,26 @@ trait MockClassInstanceTestTrait
         );
     }
 
+    /**
+     * Test that the mockInstance() method returns an instance of
+     * a class of the same type as the class or object instance
+     * reflected by the MockClassInstance's Reflection.
+     *
+     * @covers MockClassInstance->mockInstance()
+     *
+     */
+    public function testMockInstanceReturnsAnInstanceOfTheSameTypeAsTheClassOrObjectInstanceReflectedByTheReflectionAssignedToTheMockClassInstance(): void
+    {
+        $this->assertEquals(
+            $this->mockClassInstanceTestInstance()->reflection()->type()->__toString(),
+            $this->mockClassInstanceTestInstance()->mockInstance()::class,
+            $this->testFailedMessage(
+                $this->mockClassInstanceTestInstance(),
+                'mockClassInstance',
+                'return an instance of the same type as the ' .
+                'class or object instance reflected by the Reflection'
+            )
+        );
+    }
 }
 

@@ -85,7 +85,8 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
             new Name(new Text($this->randomChars())),
             new Text($this->randomChars()),
             new stdClass(),
-            stdClass::class
+            stdClass::class,
+            parent::randomClassStringOrObjectInstance(),
         ];
         return (empty($classes) ? new stdClass() : $classes[array_rand($classes)]);
     }
