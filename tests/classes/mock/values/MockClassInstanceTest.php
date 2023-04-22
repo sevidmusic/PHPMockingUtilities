@@ -11,10 +11,10 @@ use \Darling\PHPMockingUtilities\tests\mock\classes\ImplementationOfInterfaceFor
 use \Darling\PHPMockingUtilities\tests\mock\interfaces\InterfaceForClassThatDefinesMethods;
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
+use \Darling\PHPTextTypes\classes\strings\ClassString;
 use \Darling\PHPTextTypes\classes\strings\Name;
 use \Darling\PHPTextTypes\classes\strings\Text;
 use \Darling\PHPTextTypes\classes\strings\UnknownClass;
-use \Darling\PHPTextTypes\classes\strings\ClassString;
 use \Darling\PHPTextTypes\interfaces\strings\Name as NameInterface;
 use \Darling\PHPTextTypes\interfaces\strings\Text as TextInterface;
 use \ReflectionClass;
@@ -35,7 +35,7 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
      */
     use MockClassInstanceTestTrait;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $randomClassStringOrObjectInstance = $this->randomClassStringOrObjectInstance();
         $classString =

@@ -3,8 +3,8 @@
 namespace Darling\PHPMockingUtilities\tests\interfaces\mock\values;
 
 use \Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance;
-use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection;
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection as ReflectionInstance;
+use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection;
 use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \ReflectionClass;
 use \Stringable;
@@ -58,12 +58,18 @@ trait MockClassInstanceTestTrait
      * ```
      * protected function setUp(): void
      * {
-     *     $expectedReflection = new Reflection(
-     *         new ReflectionClass(new \stdClass())
-     *     );
+     *     $randomClassStringOrObjectInstance =
+     *         $this->randomClassStringOrObjectInstance();
+     *     $classString =
+     *         new ClassString(
+     *             $randomClassStringOrObjectInstance
+     *         );
+     *     $expectedReflection = new Reflection($classString);
      *     $this->setExpectedReflection($expectedReflection);
      *     $this->setMockClassInstanceTestInstance(
-     *         new \Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance()
+     *         new MockClassInstance(
+     *             $expectedReflection
+     *         )
      *     );
      * }
      *
@@ -112,7 +118,7 @@ trait MockClassInstanceTestTrait
      *
      * ```
      * $expectedReflection = new Reflection(
-     *     new ReflectionClass(new \stdClass())
+     *     new ClassString(new \stdClass())
      * );
      * $this->setExpectedReflection($expectedReflection);
      *
@@ -147,11 +153,6 @@ trait MockClassInstanceTestTrait
      * Test that the reflection method returns the expected
      * Reflection.
      *
-     * This test is failing, and will continue to fail till the
-     * following issue is addressed:
-     *
-     * https://github.com/sevidmusic/PHPTextTypes/issues/25
-     *
      * @covers MockClassInstance->reflection()
      *
      */
@@ -171,12 +172,36 @@ trait MockClassInstanceTestTrait
     /**
      * Test that the mockInstance() method returns an instance of
      * a class of the same type as the class or object instance
-     * reflected by the MockClassInstance's Reflection.
+     * reflected by the expected Reflection.
      *
      * @covers MockClassInstance->mockInstance()
      *
      */
-    public function testMockInstanceReturnsAnInstanceOfTheSameTypeAsTheClassOrObjectInstanceReflectedByTheReflectionAssignedToTheMockClassInstance(): void
+    public function testMockInstanceReturnsAnInstanceOfTheSameTypeAsTheClassOrObjectInstanceReflectedByTheExpectedReflection(): void
+    {
+        $this->assertEquals(
+            $this->expectedReflection()->type()->__toString(),
+            $this->mockClassInstanceTestInstance()->mockInstance()::class,
+            $this->testFailedMessage(
+                $this->mockClassInstanceTestInstance(),
+                'mockClassInstance',
+                'return an instance of the same type as the ' .
+                'class or object instance reflected by the expected ' .
+                'Reflection'
+            )
+        );
+    }
+
+    /**
+     * Test that the mockInstance() method returns an instance of
+     * a class of the same type as the class or object instance
+     * reflected by Reflection returned by the the MockClassInstance's
+     * reflection() meethod.
+     *
+     * @covers MockClassInstance->mockInstance()
+     *
+     */
+    public function testMockInstanceReturnsAnInstanceOfTheSameTypeAsTheClassOrObjectInstanceReflectedByTheReflectionReturnedByTheMockClassInstancesReflectionMethod(): void
     {
         $this->assertEquals(
             $this->mockClassInstanceTestInstance()->reflection()->type()->__toString(),
@@ -185,9 +210,353 @@ trait MockClassInstanceTestTrait
                 $this->mockClassInstanceTestInstance(),
                 'mockClassInstance',
                 'return an instance of the same type as the ' .
-                'class or object instance reflected by the Reflection'
+                'class or object instance reflected by the ' .
+                'MockClassInstance\'s reflection() method'
             )
         );
     }
+
+    /**
+     * Test that the mockMethodArguments() method returns an array
+     * of mock arguments for the specified method of the class
+     * or object instance reflected by the Reflection returned by
+     * the MockClassInstance's reflection() method.
+     *
+     * @covers MockClassInstance->mockInstance()
+     *
+     */
+    public function testMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectTypeForTheSpecifiedMethodOfTheClassOrObjectInstanceReflectedByTheReflectionReturnedByTheMockClassInstancesReflectionMethod(): void
+    {
+        $methodNames = $this->mockClassInstanceTestInstance()
+                            ->reflection()
+                            ->methodNames();
+        match(
+            empty($methodNames)
+        ) {
+            true =>
+                $this->assertMockMethodArgumentsReturnsAnEmptyArrayIf(
+                    'the class does not define any methods',
+                    ''
+                ),
+            default => $this->assertMockMethodArgumentsReturnsAnAppropriateArrayOfMockArgumentValuesForTheSpecifiedMethod(
+                    $this->randomNameOfMethodDefinedByReflectedClass()
+                )
+        };
+
+    }
+
+    /**
+     * Assert that mockMethodArguments() returns an appropriate array
+     * of mock arguments for the specified method of the class or
+     * object instance reflected by the Reflection assigned to the
+     * MockClassInstance being tested..
+     *
+     * If the method does not define any parameters this method will
+     * assert that mockMethodArguments() returns an empty array.
+     *
+     * If the method does define parameters, then this method will
+     * assert that mockMethodArguments() returns an array of
+     * mock argument of the appropriate type.
+     *
+     * @param string $methodName The name of the method.
+     *
+     * @return void
+     *
+     * @example
+     *
+     * ```
+     * $this->assertMockMethodArgumentsReturnsAnAppropriateArrayOfMockArgumentValuesForTheSpecifiedMethod()
+     *
+     * ```
+     *
+     */
+    private function assertMockMethodArgumentsReturnsAnAppropriateArrayOfMockArgumentValuesForTheSpecifiedMethod(
+        string $methodName
+    ): void
+    {
+        $reflectedClassMethodParameterTypes =
+            $this->mockClassInstanceTestInstance()
+                 ->reflection()
+                 -> methodParameterTypes($methodName);
+        match(empty($reflectedClassMethodParameterTypes)) {
+            true =>
+                $this->assertMockMethodArgumentsReturnsAnEmptyArrayIf(
+                    'the specified method does not expect any ' .
+                    'arguments',
+                    $methodName
+                ),
+                default =>
+                    $this->assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
+                    $methodName,
+                    $reflectedClassMethodParameterTypes
+                ),
+        };
+    }
+
+    /**
+     * Assert that mockMethodArguments() returns a non empty array of
+     * mock arguments of the correct type.
+     *
+     * @param string $methodName The name of the method.
+     *
+     * @param array<string, array<int, string>> $reflectedClassMethodParameterTypes
+     *                                          An array of the
+     *                                          method's expected
+     *                                          argument types.
+     *
+     * @example
+     *
+     * ```
+     * $this->assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
+     *     $methodName,
+     *     $reflectedClassMethodParameterTypes
+     * ),
+     *
+     * ```
+     *
+     */
+    private function assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
+        string $methodName,
+        array $reflectedClassMethodParameterTypes
+    ): void
+    {
+        $mockArguments = $this->mockClassInstanceTestInstance()
+                              ->mockMethodArguments($methodName);
+        $this->assertNotEmpty(
+            $mockArguments,
+            $this->testFailedMessage(
+                $this->mockClassInstanceTestInstance(),
+                'mockMethodArguments',
+                'return an non-empty array if the ' .
+                'specified method expects arguments'
+            )
+        );
+        foreach(
+           $mockArguments
+             as
+             $parameterName => $mockArgument
+        ) {
+            $this->assertMockArgumentsTypeMatchesOneOfTheExpectedTypes(
+                $mockArgument,
+                $reflectedClassMethodParameterTypes[$parameterName]
+            );
+        }
+    }
+
+    /**
+     * Assert that the specified value's type matches one of the
+     * types in the specified array of $expectedMethodParameterTypes.
+     *
+     * @param mixed $mockArgument The mock argument's value.
+     * @param array<int, string> $expectedMethodParameterTypes
+     *                                                  An array of
+     *                                                  the accepted
+     *                                                  types.
+     *
+     *
+     * @return void
+     *
+     * @example
+     *
+     * ```
+     * $this->assertMockArgumentsTypeMatchesOneOfTheExpectedTypes(
+     *     $mockArgument,
+     *     $expectedMethodParameterTypes
+     * );
+     *
+     * ```
+     *
+     */
+    private function assertMockArgumentsTypeMatchesOneOfTheExpectedTypes(
+        mixed $mockArgument,
+        array $expectedMethodParameterTypes
+    ): void
+    {
+        /**
+         * If the parameter is an object, determine if any
+         * of the types it implements are one of the
+         * $expectedMethodParameterTypes.
+         *
+         * This prevents a false positive in the tests that was
+         * occurring when parameters that accept an implementation
+         * of an interface or abstract class were targeted during
+         * testing.
+         *
+         * This allows mocking arguments for a method like:
+         *
+         * ```
+         * public function f(\Some\Interface $accetedImplementations)
+         * {
+         *     // ...
+         * }
+         *
+         * ```
+         *
+         */
+        if(
+            is_object($mockArgument)
+        ) {
+            foreach(class_implements($mockArgument) as $implementedType) {
+                if(
+                    in_array(
+                        $implementedType,
+                        $expectedMethodParameterTypes
+                    )
+                ) {
+                    array_push($expectedMethodParameterTypes, $mockArgument::class);
+                }
+            }
+        }
+
+        /**
+         * If parameter accepts 'mixed' add the $mockArgument's
+         * determined type to the array of $expectedMethodParameterTypes
+         * since the $expectedMethodParameterTypes array may contain the
+         * 'mixed' type but may not contain the $mockArgument's
+         * actual type even though any type is valid.
+         *
+         * This prevents a false positive in the tests that was
+         * occuring when parameters that accept 'mixed' were
+         * targeted during testing.
+         *
+         */
+        if(in_array('mixed', $expectedMethodParameterTypes)) {
+            array_push($expectedMethodParameterTypes, $this->determineType($mockArgument));
+        }
+        /**
+         * If parameter accepts 'object' add stdClass::class to
+         * the array of $expectedMethodParameterTypes since the
+         * $expectedMethodParameterTypes array may contain the
+         * 'object' type but may not contain stdClass::class
+         * even though stdClass::class is valid if the
+         * parameter's accpeted types includes 'object'.
+         *
+         * This prevents a false positive in the tests that was
+         * occuring when parameters that accept 'mixed' were
+         * targeted
+         */
+        if(in_array('object', $expectedMethodParameterTypes)) {
+            array_push($expectedMethodParameterTypes, \stdClass::class);
+        }
+        $this->assertTrue(
+            in_array(
+                $this->determineType($mockArgument),
+                $expectedMethodParameterTypes,
+                true
+            ),
+            $this->testFailedMessage(
+                $this->mockClassInstanceTestInstance(),
+                'mockMethodArguments',
+                'return an array of mock arguments of ' .
+                'the correct type for the specified ' .
+                'method of the class or object ' .
+                'instance reflected by the ' .
+                'Reflection assigned to the ' .
+                'MockClassInstance'
+            )
+        );
+    }
+
+    /**
+     * Assert that the mockMethodArguments() method returns an
+     * empty array for the specified $reason.
+     *
+     * @return void
+     *
+     * @example
+     *
+     * ```
+     * $this->assertMockMethodArgumentsReturnsAnEmptyArrayIf(
+     *     'reason mockMethodArguments() should return an empty array',
+     *     'methodName'
+     * );
+     *
+     * ```
+     *
+     */
+    private function assertMockMethodArgumentsReturnsAnEmptyArrayIf(
+        string $reason,
+        string $methodName
+    ): void
+    {
+        $this->assertEmpty(
+            $this->mockClassInstanceTestInstance()
+                 ->mockMethodArguments($methodName),
+            $this->testFailedMessage(
+                $this->mockClassInstanceTestInstance(),
+                'mockMethodArguments',
+                'return an empty array if ' . $reason
+            )
+        );
+    }
+
+    /**
+     * Determine the type of the specified value.
+     *
+     * @return string
+     *
+     * @example
+     *
+     * ```
+     * var_dump(determineType(mixed $value));
+     *
+     * // example output:
+     * string(3) "int"
+     *
+     * ```
+     *
+     */
+    private function determineType(mixed $value): string
+    {
+        /**
+         * String replacements are to insure consistency.
+         *
+         * For example:
+         *
+         * gettype() will return the string 'double' for a float.
+         *
+         * Hpwever, Reflection->methodParameterTypes() uses the
+         * string 'float' to indicate a float, so to insure there
+         * are not false positives that trigger a failing test,
+         * we need to insure determineType() returns a string that
+         * will match one of the strings used to indicate type in
+         * the array returned by Reflection->methodParameterTypes().
+         */
+        return
+            is_object($value)
+            ? $value::class
+            : str_replace(
+                [ 'integer', 'boolean', 'double'],
+                [ 'int', 'bool', 'float'],
+                gettype($value)
+        );
+    }
+
+    /**
+     * Return a randomly selected name of a method defined by the
+     * class or object instance reflected by the Reflection returned
+     * by the MockClassInstance's reflection() method.
+     *
+     * @return string
+     *
+     * @example
+     *
+     * ```
+     * $this->randomNameOfMethodDefinedByReflectedClass();
+     *
+     * ```
+     *
+     */
+    private function randomNameOfMethodDefinedByReflectedClass(): string
+    {
+        $methodNames = $this->mockClassInstanceTestInstance()
+                            ->reflection()
+                            ->methodNames();
+        if(!empty($methodNames)) {
+            return $methodNames[array_rand($methodNames)];
+        }
+        return '';
+    }
+
 }
 
