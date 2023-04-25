@@ -156,7 +156,7 @@ trait MockClassInstanceTestTrait
      * @covers MockClassInstance->reflection()
      *
      */
-    public function testReflectionReturnsTheExpectedReflection(): void
+    public function test_reflection_returns_the_expected_reflection(): void
     {
         $this->assertEquals(
             $this->expectedReflection(),
@@ -177,7 +177,7 @@ trait MockClassInstanceTestTrait
      * @covers MockClassInstance->mockInstance()
      *
      */
-    public function testMockInstanceReturnsAnInstanceOfTheSameTypeAsTheClassOrObjectInstanceReflectedByTheExpectedReflection(): void
+    public function test_mock_instance_returns_an_instance_of_the_same_type_as_the_class_or_object_instance_reflected_by_the_expected_reflection(): void
     {
         $this->assertEquals(
             $this->expectedReflection()->type()->__toString(),
@@ -201,7 +201,7 @@ trait MockClassInstanceTestTrait
      * @covers MockClassInstance->mockInstance()
      *
      */
-    public function testMockInstanceReturnsAnInstanceOfTheSameTypeAsTheClassOrObjectInstanceReflectedByTheReflectionReturnedByTheMockClassInstancesReflectionMethod(): void
+    public function test_mock_instance_returns_an_instance_of_the_same_type_as_the_class_or_object_instance_reflected_by_the_reflection_returned_by_the_mock_class_instances_reflection_method(): void
     {
         $this->assertEquals(
             $this->mockClassInstanceTestInstance()->reflection()->type()->__toString(),
