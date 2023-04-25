@@ -316,20 +316,11 @@ trait MockClassInstanceTestTrait
         string $methodName,
     ): void
     {
+        $this->assertRuntimeExceptionIsThrownIfAnyOfTheParametersDefinedByTheSpecifiedMethodExpectAnImplementationOfAnInterfaceOrAnAbstractClass($methodName);
         $reflectedClassMethodParameterTypes =
             $this->mockClassInstanceTestInstance()
                  ->reflection()
                  -> methodParameterTypes($methodName);
-        foreach($reflectedClassMethodParameterTypes as $expectedParameterTypes) {
-            foreach($expectedParameterTypes as $expectedParameterType) {
-                if(interface_exists($expectedParameterType) || class_exists($expectedParameterType)) {
-                    $reflectionClass = new \ReflectionClass($expectedParameterType);
-                    if($reflectionClass->isInterface() || $reflectionClass->isAbstract()) {
-                        $this->expectException(\RuntimeException::class);
-                    }
-                }
-            }
-        }
         $mockArguments = $this->mockClassInstanceTestInstance()
                               ->mockMethodArguments($methodName);
         $this->assertNotEmpty(
@@ -350,6 +341,43 @@ trait MockClassInstanceTestTrait
                 $mockArgument,
                 $reflectedClassMethodParameterTypes[$parameterName]
             );
+        }
+    }
+
+    private function assertRuntimeExceptionIsThrownIfAnyOfTheParametersDefinedByTheSpecifiedMethodExpectAnImplementationOfAnInterfaceOrAnAbstractClass(string $methodName): void
+    {
+        $reflectedClassMethodParameterTypes =
+            $this->mockClassInstanceTestInstance()
+                 ->reflection()
+                 -> methodParameterTypes($methodName);
+        foreach($reflectedClassMethodParameterTypes as $expectedParameterTypes) {
+            foreach($expectedParameterTypes as $expectedParameterType) {
+                if(interface_exists($expectedParameterType) || class_exists($expectedParameterType)) {
+                    $reflectionClass = new \ReflectionClass($expectedParameterType);
+                    if(
+                        $reflectionClass->isInterface()
+                        ||
+                        $reflectionClass->isAbstract())
+                    {
+                        if(
+                            substr($expectedParameterType, 0, 7)
+                            === 'Darling'
+                            &&
+                            !str_contains($expectedParameterType, 'tests\\')
+                            &&
+                            !str_contains($expectedParameterType, 'Tests\\')
+                        ) {
+                            continue;
+                        }
+                        if(
+                            $expectedParameterType === \Stringable::class
+                        ) {
+                            continue;
+                        }
+                        $this->expectException(\RuntimeException::class);
+                    }
+                }
+            }
         }
     }
 
