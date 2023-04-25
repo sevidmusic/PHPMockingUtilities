@@ -225,13 +225,14 @@ trait MockClassInstanceTestTrait
      * @covers MockClassInstance->mockInstance()
      *
      */
-    public function testMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectTypeForTheSpecifiedMethodOfTheClassOrObjectInstanceReflectedByTheReflectionReturnedByTheMockClassInstancesReflectionMethod(): void
+    public function test_mock_method_arguments_returns_an_array_of_mock_arguments_of_the_correct_type_for_the_specified_method_of_the_class_or_object_instance_reflected_by_the_reflection_returned_by_the_mock_class_instances_reflection_method(): void
     {
-        $methodNames = $this->mockClassInstanceTestInstance()
-                            ->reflection()
-                            ->methodNames();
         match(
-            empty($methodNames)
+            empty(
+                $this->mockClassInstanceTestInstance()
+                     ->reflection()
+                     ->methodNames()
+            )
         ) {
             true =>
                 $this->assertMockMethodArgumentsReturnsAnEmptyArrayIf(
@@ -274,11 +275,13 @@ trait MockClassInstanceTestTrait
         string $methodName
     ): void
     {
-        $reflectedClassMethodParameterTypes =
-            $this->mockClassInstanceTestInstance()
-                 ->reflection()
-                 -> methodParameterTypes($methodName);
-        match(empty($reflectedClassMethodParameterTypes)) {
+        match(
+            empty(
+                $this->mockClassInstanceTestInstance()
+                     ->reflection()
+                     ->methodParameterNames($methodName)
+            )
+        ) {
             true =>
                 $this->assertMockMethodArgumentsReturnsAnEmptyArrayIf(
                     'the specified method does not expect any ' .
@@ -286,9 +289,8 @@ trait MockClassInstanceTestTrait
                     $methodName
                 ),
                 default =>
-                    $this->assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
+                    $this->assertMockMethodArgumentsReturnsANonEmptyArrayOfMockArgumentsOfTheCorrectType(
                     $methodName,
-                    $reflectedClassMethodParameterTypes
                 ),
         };
     }
@@ -299,15 +301,10 @@ trait MockClassInstanceTestTrait
      *
      * @param string $methodName The name of the method.
      *
-     * @param array<string, array<int, string>> $reflectedClassMethodParameterTypes
-     *                                          An array of the
-     *                                          method's expected
-     *                                          argument types.
-     *
      * @example
      *
      * ```
-     * $this->assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
+     * $this->assertMockMethodArgumentsReturnsANonEmptyArrayOfMockArgumentsOfTheCorrectType(
      *     $methodName,
      *     $reflectedClassMethodParameterTypes
      * ),
@@ -315,11 +312,24 @@ trait MockClassInstanceTestTrait
      * ```
      *
      */
-    private function assertMockMethodArgumentsReturnsAnArrayOfMockArgumentsOfTheCorrectType(
+    private function assertMockMethodArgumentsReturnsANonEmptyArrayOfMockArgumentsOfTheCorrectType(
         string $methodName,
-        array $reflectedClassMethodParameterTypes
     ): void
     {
+        $reflectedClassMethodParameterTypes =
+            $this->mockClassInstanceTestInstance()
+                 ->reflection()
+                 -> methodParameterTypes($methodName);
+        foreach($reflectedClassMethodParameterTypes as $expectedParameterTypes) {
+            foreach($expectedParameterTypes as $expectedParameterType) {
+                if(interface_exists($expectedParameterType) || class_exists($expectedParameterType)) {
+                    $reflectionClass = new \ReflectionClass($expectedParameterType);
+                    if($reflectionClass->isInterface() || $reflectionClass->isAbstract()) {
+                        $this->expectException(\RuntimeException::class);
+                    }
+                }
+            }
+        }
         $mockArguments = $this->mockClassInstanceTestInstance()
                               ->mockMethodArguments($methodName);
         $this->assertNotEmpty(
