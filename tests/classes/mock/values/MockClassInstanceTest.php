@@ -37,7 +37,8 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
 
     protected function setUp(): void
     {
-        $randomClassStringOrObjectInstance = $this->randomClassStringOrObjectInstance();
+        $randomClassStringOrObjectInstance =
+            $this->randomClassStringOrObjectInstance();
         $classString =
             new ClassString(
                 $randomClassStringOrObjectInstance
@@ -71,25 +72,29 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
     {
         /** @var array<int, class-string|object> $classes */
         $classes = [
-#            parent::randomClassStringOrObjectInstance(),
-#            AbstractImplementationOfInterfaceForClassThatDefinesMethods::class,
-#            ClassThatDoesNotDefineMethods::class,
-#            ImplementationOfInterfaceForClassThatDefinesMethods::class,
-#            new ImplementationOfInterfaceForClassThatDefinesMethods(),
-#            InterfaceForClassThatDefinesMethods::class,
-#            Name::class,
-#            NameInterface::class,
-#            Text::class,
-#            TextInterface::class,
-#            new ClassThatDoesNotDefineMethods(),
-#            new Name(new Text($this->randomChars())),
-#            new Text($this->randomChars()),
-#            new stdClass(),
-#            stdClass::class,
-#            parent::randomClassStringOrObjectInstance(),
+            parent::randomClassStringOrObjectInstance(),
+            AbstractImplementationOfInterfaceForClassThatDefinesMethods::class,
+            ClassThatDoesNotDefineMethods::class,
+            ImplementationOfInterfaceForClassThatDefinesMethods::class,
+            new ImplementationOfInterfaceForClassThatDefinesMethods(),
+            InterfaceForClassThatDefinesMethods::class,
+            Name::class,
+            NameInterface::class,
+            Text::class,
+            TextInterface::class,
+            new ClassThatDoesNotDefineMethods(),
+            new Name(new Text($this->randomChars())),
+            new Text($this->randomChars()),
+            new stdClass(),
+            stdClass::class,
+            parent::randomClassStringOrObjectInstance(),
             function(): void {},
         ];
-        return (empty($classes) ? new stdClass() : $classes[array_rand($classes)]);
+        return (
+            empty($classes)
+            ? new stdClass()
+            : $classes[array_rand($classes)]
+        );
     }
 }
 
