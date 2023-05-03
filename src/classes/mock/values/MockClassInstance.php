@@ -140,10 +140,14 @@ class MockClassInstance implements MockClassInstanceInterface
          array $constructorArguments = []
      ): object
      {
-         return $this->getClassInstance(
-             $this->reflection->type()->__toString(),
-             $constructorArguments
-         );
+         return match(
+             $this->isAClosure(
+                 $this->reflection->type()->__toString()
+             )
+         ) {
+             true => $this->mockClosure(),
+             default => $this->getClassInstance($this->reflection->type()->__toString(), $constructorArguments),
+         };
      }
 
      /**
@@ -240,7 +244,7 @@ class MockClassInstance implements MockClassInstanceInterface
                 $name => $types
             ) {
                 foreach($types as $type) {
-                    if($type === \Closure::class) {
+                    if($this->isAClosure($type)) {
                         $defaults[$name] = $this->mockClosure();
                         continue;
                     }
@@ -430,6 +434,11 @@ class MockClassInstance implements MockClassInstanceInterface
     {
         $mockMixedValue = new MockMixedValue();
         return $mockMixedValue->value();
+    }
+
+    private function isAClosure(string $type): bool
+    {
+        return $type === \Closure::class || $type === 'callable';
     }
 
 }

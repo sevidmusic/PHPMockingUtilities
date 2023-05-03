@@ -37,7 +37,8 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
 
     protected function setUp(): void
     {
-        $randomClassStringOrObjectInstance = $this->randomClassStringOrObjectInstance();
+        $randomClassStringOrObjectInstance =
+            $this->randomClassStringOrObjectInstance();
         $classString =
             new ClassString(
                 $randomClassStringOrObjectInstance
@@ -87,8 +88,13 @@ class MockClassInstanceTest extends PHPMockingUtilitiesTest
             new stdClass(),
             stdClass::class,
             parent::randomClassStringOrObjectInstance(),
+            function(): void {},
         ];
-        return (empty($classes) ? new stdClass() : $classes[array_rand($classes)]);
+        return (
+            empty($classes)
+            ? new stdClass()
+            : $classes[array_rand($classes)]
+        );
     }
 }
 
