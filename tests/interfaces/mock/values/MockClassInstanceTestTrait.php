@@ -8,6 +8,7 @@ use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection;
 use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \ReflectionClass;
 use \Stringable;
+use \Closure;
 
 /**
  * The MockClassInstanceTestTrait defines common tests for
@@ -590,10 +591,19 @@ trait MockClassInstanceTestTrait
         $methodNames = $this->mockClassInstanceTestInstance()
                             ->reflection()
                             ->methodNames();
-        if(!empty($methodNames)) {
-            return $methodNames[array_rand($methodNames)];
+        if(
+            empty($methodNames)
+            ||
+            $this->mockClassInstanceTestInstance()
+                 ->reflection()
+                 ->type()
+                 ->__toString()
+             === Closure::class
+        ) {
+            return '';
+
         }
-        return '';
+        return $methodNames[array_rand($methodNames)];
     }
 
 }
