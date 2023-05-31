@@ -6,11 +6,10 @@ use \Darling\PHPMockingUtilities\tests\mock\interfaces\InterfaceForClassThatDefi
 use \Darling\PHPMockingUtilities\tests\mock\abstractions\AbstractImplementationOfInterfaceForClassThatDefinesMethods;
 
 /**
- * The following classes are defined here for use by
- * the MockClassInstanceTest
+ * The following class is defined here for use by the
+ * MockClassInstanceTest
  *
  */
-
 class ImplementationOfInterfaceForClassThatDefinesMethods extends AbstractImplementationOfInterfaceForClassThatDefinesMethods implements InterfaceForClassThatDefinesMethods
 {
     /**

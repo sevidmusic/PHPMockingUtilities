@@ -5,8 +5,8 @@ namespace Darling\PHPMockingUtilities\tests\mock\interfaces;
 use \Darling\PHPMockingUtilities\tests\mock\abstractions\AbstractImplementationOfInterfaceForClassThatDefinesMethods;
 
 /**
- * The following classes are defined here for use by
- * the MockClassInstanceTest
+ * The following interface is defined here for use by the
+ * MockClassInstanceTest
  *
  */
 
