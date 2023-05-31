@@ -1,7 +1,8 @@
 <?php
 
 /**
- * This file provides examples that demonstrate how to use a MockString.
+ * This file provides examples that demonstrate how to use a
+ * MockString.
  */
 
 require_once(

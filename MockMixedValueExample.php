@@ -1,7 +1,8 @@
 <?php
 
 /**
- * This file provides examples that demonstrate how to use a MockMixedValue.
+ * This file provides examples that demonstrate how to use a
+ * MockMixedValue.
  */
 
 require_once(

@@ -1,7 +1,8 @@
 <?php
 
 /**
- * This file provides examples that demonstrate how to use a MockClassInstance.
+ * This file provides examples that demonstrate how to use a
+ * MockClassInstance.
  */
 
 require_once(

@@ -1,7 +1,8 @@
 <?php
 
 /**
- * This file provides examples that demonstrate how to use a MockFloat.
+ * This file provides examples that demonstrate how to use a
+ * MockFloat.
  */
 
 require_once(

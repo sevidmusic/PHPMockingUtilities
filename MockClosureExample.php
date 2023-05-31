@@ -1,7 +1,8 @@
 <?php
 
 /**
- * This file provides examples that demonstrate how to use a MockClosure.
+ * This file provides examples that demonstrate how to use a
+ * MockClosure.
  */
 
 require_once(
