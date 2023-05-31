@@ -14,18 +14,99 @@ The following classes are provided by this library:
 ```
 \Darling\PHPMockingUtilities\classes\mock\values\MockArray
 
-\Darling\PHPMoc \classes\mock\values\MockBool
+\Darling\PHPMockingUtilities\classes\mock\values\MockBool
 
-\Darling\PHPMoc \classes\mock\values\MockClassInstance
+\Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance
 
-\Darling\PHPMoc \classes\mock\values\MockClosure
+\Darling\PHPMockingUtilities\classes\mock\values\MockClosure
 
-\Darling\PHPMoc \classes\mock\values\MockFloat
+\Darling\PHPMockingUtilities\classes\mock\values\MockFloat
 
-\Darling\PHPMoc \classes\mock\values\MockInt
+\Darling\PHPMockingUtilities\classes\mock\values\MockInt
 
-\Darling\PHPMoc \classes\mock\values\MockMixedValue
+\Darling\PHPMockingUtilities\classes\mock\values\MockMixedValue
 
-\Darling\PHPMoc \classes\mock\values\MockString
+\Darling\PHPMockingUtilities\classes\mock\values\MockString
 
 ```
+
+# Installation
+
+```
+composer require darling/php-mocking-utilities
+
+```
+
+# Classes
+
+### \Darling\PHPMockingUtilities\classes\mock\values\MockArray
+
+Can be used to mock an empty array.
+
+Example:
+
+```
+var_dump($mockArray->value());
+
+// example output:
+array(0) {
+}
+
+```
+
+### \Darling\PHPMockingUtilities\classes\mock\values\MockBool
+
+Can be used to mock the boolean value false.
+
+Example:
+
+```
+var_dump($mockBool->value());
+
+// example output:
+bool(false)
+
+```
+
+### \Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance
+
+Can be used to mock an instance of an existing class.
+
+Can also be used to mock argument values for methods defined
+by an existing class.
+
+Example:
+
+```
+var_dump($mocker->reflection()->type()->__toString());
+
+// example output:
+string(8) "stdClass"
+
+$mockInstance = $mocker->mockInstance();
+
+var_dump($mockInstance);
+
+// example output:
+class stdClass#38 (0) {
+}
+
+var_dump($mocker->mockMethodArguments('__construct'));
+
+// example output:
+array(0) {
+}
+
+```
+
+### \Darling\PHPMockingUtilities\classes\mock\values\MockClosure
+
+### \Darling\PHPMockingUtilities\classes\mock\values\MockFloat
+
+### \Darling\PHPMockingUtilities\classes\mock\values\MockInt
+
+### \Darling\PHPMockingUtilities\classes\mock\values\MockMixedValue
+
+### \Darling\PHPMockingUtilities\classes\mock\values\MockString
+
+
