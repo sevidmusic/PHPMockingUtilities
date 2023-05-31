@@ -7,7 +7,8 @@
 
 ```
 
-The PHPMockingUtilities library provides classes that can be used to mock various types of values.
+The PHPMockingUtilities library provides classes that can be used to
+mock various types of values.
 
 The following classes are provided by this library:
 
@@ -29,6 +30,19 @@ The following classes are provided by this library:
 \Darling\PHPMockingUtilities\classes\mock\values\MockString
 
 ```
+
+# Overview
+
+- [Installation](#installation)
+- [Classes](#classes)
+    1. [\Darling\PHPMockingUtilities\classes\mock\values\MockArray](#darlingphpmockingutilitiesclassesmockvaluesmockarray)
+    2. [\Darling\PHPMockingUtilities\classes\mock\values\MockBool](#darlingphpmockingutilitiesclassesmockvaluesmockbool)
+    3. [\Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance](#darlingphpmockingutilitiesclassesmockvaluesmockclassinstance)
+    4. [\Darling\PHPMockingUtilities\classes\mock\values\MockClosure](#darlingphpmockingutilitiesclassesmockvaluesmockclosure)
+    5. [\Darling\PHPMockingUtilities\classes\mock\values\MockFloat](#darlingphpmockingutilitiesclassesmockvaluesmockfloat)
+    6. [\Darling\PHPMockingUtilities\classes\mock\values\MockInt](#darlingphpmockingutilitiesclassesmockvaluesmockint)
+    7. [\Darling\PHPMockingUtilities\classes\mock\values\MockMixedValue](#darlingphpmockingutilitiesclassesmockvaluesmockmixedvalue)
+    8. [\Darling\PHPMockingUtilities\classes\mock\values\MockString](#darlingphpmockingutilitiesclassesmockvaluesmockstring)
 
 # Installation
 
