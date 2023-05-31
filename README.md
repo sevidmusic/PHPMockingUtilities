@@ -62,10 +62,6 @@ Example:
 ```
 <?php
 
-/**
- * This file provides examples that demonstrate how to use a MockArray.
- */
-
 require_once(
     __DIR__ .
     DIRECTORY_SEPARATOR .
@@ -79,6 +75,10 @@ use \Darling\PHPMockingUtilities\classes\mock\values\MockArray;
 $mockArray = new MockArray();
 
 var_dump($mockArray->value());
+
+// example output:
+array(0) {
+}
 
 ```
 
@@ -108,6 +108,9 @@ use \Darling\PHPMockingUtilities\classes\mock\values\MockBool;
 $mockBool = new MockBool();
 
 var_dump($mockBool->value());
+
+// example output:
+bool(false)
 
 ```
 
@@ -148,6 +151,23 @@ $mockClassInstance = new MockClassInstance(
 
 var_dump($mockClassInstance->mockInstance());
 
+
+// example output:
+class Darling\PHPTextTypes\classes\strings\Id#7 (2) {
+  private string $string =>
+  string(63) "UauDDaglHG5tqF7hTQCiKuy32nsVe7k9d0qBcIoW09RF1pyNT4wSIbWnad83Nix"
+  private Darling\PHPTextTypes\interfaces\strings\Text $text =>
+  class Darling\PHPTextTypes\classes\strings\AlphanumericText#6 (2) {
+    private string $string =>
+    string(63) "UauDDaglHG5tqF7hTQCiKuy32nsVe7k9d0qBcIoW09RF1pyNT4wSIbWnad83Nix"
+    private Darling\PHPTextTypes\interfaces\strings\Text $text =>
+    class Darling\PHPTextTypes\classes\strings\Text#8 (1) {
+      private string $string =>
+      string(63) "UauDDaglHG5tqF7hTQCiKuy32nsVe7k9d0qBcIoW09RF1pyNT4wSIbWnad83Nix"
+    }
+  }
+}
+
 ```
 
 ### \Darling\PHPMockingUtilities\classes\mock\values\MockClosure
@@ -177,6 +197,15 @@ use \Darling\PHPMockingUtilities\classes\mock\values\MockClosure;
 $mockClosure = new MockClosure();
 
 var_dump($mockClosure->value());
+
+// example output:
+class Closure#2 (1) {
+  virtual $closure =>
+  "$this->Darling\PHPMockingUtilities\classes\mock\values\{closure}"
+  public $this =>
+  class Darling\PHPMockingUtilities\classes\mock\values\MockClosure#3 (0) {
+  }
+}
 
 
 ```
@@ -209,6 +238,9 @@ $mockFloat = new MockFloat();
 
 var_dump($mockFloat->value());
 
+// example output:
+double(394703.8)
+
 ```
 
 ### \Darling\PHPMockingUtilities\classes\mock\values\MockInt
@@ -237,6 +269,9 @@ use \Darling\PHPMockingUtilities\classes\mock\values\MockInt;
 $mockInt = new MockInt();
 
 var_dump($mockInt->value());
+
+// example output:
+int(5360127692240532047)
 
 ```
 
@@ -268,6 +303,9 @@ $mockMixedValue = new MockMixedValue();
 
 var_dump($mockMixedValue->value());
 
+// example output:
+string(62) "b7i0Doje1VuIXJsy4TkvMA5L3QhxqNHUmr9tSPOzfnRd8WEBc6Flw2CgGaZpYK"
+
 ```
 
 ### \Darling\PHPMockingUtilities\classes\mock\values\MockString
@@ -298,6 +336,9 @@ $mockString = new MockString();
 
 var_dump($mockString->value());
 
+// example output:
+
+string(49) "MockStringCwnmRNocnGdY2O3TLudxVHbJIZ0EzbJEXKxB743"
 
 ```
 
