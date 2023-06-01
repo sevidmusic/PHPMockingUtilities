@@ -5,8 +5,8 @@ namespace Darling\PHPMockingUtilities\tests\interfaces\mock\values;
 use Darling\PHPMockingUtilities\interfaces\mock\values\MockBool;
 
 /**
- * The MockBoolTestTrait defines common tests for
- * implementations of the MockBool interface.
+ * The MockBoolTestTrait defines common tests for implementations of
+ * the MockBool interface.
  *
  * @see MockBool
  *
@@ -15,10 +15,8 @@ trait MockBoolTestTrait
 {
 
     /**
-     * @var MockBool $mockBool
-     *                              An instance of a
-     *                              MockBool
-     *                              implementation to test.
+     * @var MockBool $mockBool An instance of a MockBool
+     *                         implementation to test.
      */
     protected MockBool $mockBool;
 

@@ -101,6 +101,13 @@ trait MockClassInstanceTestTrait
      *
      * @return void
      *
+     * @example
+     *
+     * ```
+     * $this->setMockClassInstanceTestInstance($mockClassInstance);
+     *
+     * ```
+     *
      */
     protected function setMockClassInstanceTestInstance(
         MockClassInstance $mockClassInstanceTestInstance
@@ -182,13 +189,14 @@ trait MockClassInstanceTestTrait
     {
         $this->assertEquals(
             $this->expectedReflection()->type()->__toString(),
-            $this->mockClassInstanceTestInstance()->mockInstance()::class,
+            $this->mockClassInstanceTestInstance()
+                 ->mockInstance()::class,
             $this->testFailedMessage(
                 $this->mockClassInstanceTestInstance(),
                 'mockClassInstance',
                 'return an instance of the same type as the ' .
-                'class or object instance reflected by the expected ' .
-                'Reflection'
+                'class or object instance reflected by the ' .
+                'expected Reflection'
             )
         );
     }
@@ -205,8 +213,12 @@ trait MockClassInstanceTestTrait
     public function test_mock_instance_returns_an_instance_of_the_same_type_as_the_class_or_object_instance_reflected_by_the_reflection_returned_by_the_mock_class_instances_reflection_method(): void
     {
         $this->assertEquals(
-            $this->mockClassInstanceTestInstance()->reflection()->type()->__toString(),
-            $this->mockClassInstanceTestInstance()->mockInstance()::class,
+            $this->mockClassInstanceTestInstance()
+                 ->reflection()
+                 ->type()
+                 ->__toString(),
+             $this->mockClassInstanceTestInstance()
+                  ->mockInstance()::class,
             $this->testFailedMessage(
                 $this->mockClassInstanceTestInstance(),
                 'mockClassInstance',
@@ -240,9 +252,10 @@ trait MockClassInstanceTestTrait
                     'the class does not define any methods',
                     ''
                 ),
-            default => $this->assertMockMethodArgumentsReturnsAnAppropriateArrayOfMockArgumentValuesForTheSpecifiedMethod(
+            default =>
+                $this->assertMockMethodArgumentsReturnsAnAppropriateArrayOfMockArgumentValuesForTheSpecifiedMethod(
                     $this->randomNameOfMethodDefinedByReflectedClass()
-                )
+                ),
         };
 
     }
@@ -291,8 +304,8 @@ trait MockClassInstanceTestTrait
                 ),
                 default =>
                     $this->assertMockMethodArgumentsReturnsANonEmptyArrayOfMockArgumentsOfTheCorrectType(
-                    $methodName,
-                ),
+                        $methodName,
+                    ),
         };
     }
 
@@ -308,7 +321,7 @@ trait MockClassInstanceTestTrait
      * $this->assertMockMethodArgumentsReturnsANonEmptyArrayOfMockArgumentsOfTheCorrectType(
      *     $methodName,
      *     $reflectedClassMethodParameterTypes
-     * ),
+     * );
      *
      * ```
      *
@@ -317,7 +330,9 @@ trait MockClassInstanceTestTrait
         string $methodName,
     ): void
     {
-        $this->assertRuntimeExceptionIsThrownIfAnyOfTheParametersDefinedByTheSpecifiedMethodExpectAnImplementationOfAnInterfaceOrAnAbstractClass($methodName);
+        $this->assertRuntimeExceptionIsThrownIfAnyOfTheParametersDefinedByTheSpecifiedMethodExpectAnImplementationOfAnInterfaceOrAnAbstractClass(
+            $methodName
+        );
         $reflectedClassMethodParameterTypes =
             $this->mockClassInstanceTestInstance()
                  ->reflection()
@@ -345,16 +360,45 @@ trait MockClassInstanceTestTrait
         }
     }
 
-    private function assertRuntimeExceptionIsThrownIfAnyOfTheParametersDefinedByTheSpecifiedMethodExpectAnImplementationOfAnInterfaceOrAnAbstractClass(string $methodName): void
+    /**
+     * Assert that a RuntimeException is thrown if any of the
+     * parameters defined by the specified method expect an
+     * implementation of an interface or an abstract class.
+     *
+     * @return void
+     *
+     * @example
+     *
+     * ```
+     * $this->assertRuntimeExceptionIsThrownIfAnyOfTheParametersDefinedByTheSpecifiedMethodExpectAnImplementationOfAnInterfaceOrAnAbstractClass(
+     *     $methodName
+     * )
+     *
+     * ```
+     *
+     */
+    private function assertRuntimeExceptionIsThrownIfAnyOfTheParametersDefinedByTheSpecifiedMethodExpectAnImplementationOfAnInterfaceOrAnAbstractClass(
+        string $methodName
+    ): void
     {
         $reflectedClassMethodParameterTypes =
             $this->mockClassInstanceTestInstance()
                  ->reflection()
                  -> methodParameterTypes($methodName);
-        foreach($reflectedClassMethodParameterTypes as $expectedParameterTypes) {
-            foreach($expectedParameterTypes as $expectedParameterType) {
-                if(interface_exists($expectedParameterType) || class_exists($expectedParameterType)) {
-                    $reflectionClass = new \ReflectionClass($expectedParameterType);
+        foreach(
+            $reflectedClassMethodParameterTypes as $expectedParameterTypes
+        ) {
+            foreach(
+                $expectedParameterTypes as $expectedParameterType)
+            {
+                if(
+                    interface_exists($expectedParameterType)
+                    ||
+                    class_exists($expectedParameterType)
+                ) {
+                    $reflectionClass = new \ReflectionClass(
+                        $expectedParameterType
+                    );
                     if(
                         $reflectionClass->isInterface()
                         ||
@@ -364,18 +408,28 @@ trait MockClassInstanceTestTrait
                             substr($expectedParameterType, 0, 7)
                             === 'Darling'
                             &&
-                            !str_contains($expectedParameterType, 'tests\\')
+                            !str_contains(
+                                $expectedParameterType,
+                                'tests\\'
+                            )
                             &&
-                            !str_contains($expectedParameterType, 'Tests\\')
+                            !str_contains(
+                                $expectedParameterType,
+                                'Tests\\'
+                            )
                         ) {
                             continue;
                         }
                         if(
-                            $expectedParameterType === \Stringable::class
+                            $expectedParameterType
+                            ===
+                            \Stringable::class
                         ) {
                             continue;
                         }
-                        $this->expectException(\RuntimeException::class);
+                        $this->expectException(
+                            \RuntimeException::class
+                        );
                     }
                 }
             }
@@ -391,7 +445,6 @@ trait MockClassInstanceTestTrait
      *                                                  An array of
      *                                                  the accepted
      *                                                  types.
-     *
      *
      * @return void
      *
@@ -411,71 +464,30 @@ trait MockClassInstanceTestTrait
         array $expectedMethodParameterTypes
     ): void
     {
-        /**
-         * If the parameter is an object, determine if any
-         * of the types it implements are one of the
-         * $expectedMethodParameterTypes.
-         *
-         * This prevents a false positive in the tests that was
-         * occurring when parameters that accept an implementation
-         * of an interface or abstract class were targeted during
-         * testing.
-         *
-         * This allows mocking arguments for a method like:
-         *
-         * ```
-         * public function f(\Some\Interface $accetedImplementations)
-         * {
-         *     // ...
-         * }
-         *
-         * ```
-         *
-         */
         if(
             is_object($mockArgument)
         ) {
-            foreach(class_implements($mockArgument) as $implementedType) {
+            foreach(
+                class_implements($mockArgument) as $implementedType
+            ) {
                 if(
                     in_array(
                         $implementedType,
                         $expectedMethodParameterTypes
                     )
                 ) {
-                    array_push($expectedMethodParameterTypes, $mockArgument::class);
+                    $expectedMethodParameterTypes[] =
+                        $mockArgument::class;
                 }
             }
         }
-
-        /**
-         * If parameter accepts 'mixed' add the $mockArgument's
-         * determined type to the array of $expectedMethodParameterTypes
-         * since the $expectedMethodParameterTypes array may contain the
-         * 'mixed' type but may not contain the $mockArgument's
-         * actual type even though any type is valid.
-         *
-         * This prevents a false positive in the tests that was
-         * occuring when parameters that accept 'mixed' were
-         * targeted during testing.
-         *
-         */
         if(in_array('mixed', $expectedMethodParameterTypes)) {
-            array_push($expectedMethodParameterTypes, $this->determineType($mockArgument));
+            $expectedMethodParameterTypes[] =
+                $this->determineType($mockArgument);
         }
-        /**
-         * If parameter accepts 'object' add stdClass::class to
-         * the array of $expectedMethodParameterTypes since the
-         * $expectedMethodParameterTypes array may contain the
-         * 'object' type but may not contain stdClass::class
-         * even though stdClass::class is valid if the
-         * parameter's accpeted types includes 'object'.
-         *
-         * This prevents a false positive in the tests that was
-         * occuring when parameters that accept 'mixed' were
-         * targeted
-         */
         if(in_array('object', $expectedMethodParameterTypes)) {
-            array_push($expectedMethodParameterTypes, \stdClass::class);
+            $expectedMethodParameterTypes[] =
+                \stdClass::class;
         }
         $this->assertTrue(
             in_array(

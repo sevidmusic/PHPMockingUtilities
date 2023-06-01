@@ -77,7 +77,7 @@ trait MockArrayTestTrait
     }
 
     /**
-     * Test the value() returns an empty array.
+     * Test that the value() method returns an empty array.
      *
      * @covers MockArray->value()
      *
