@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file provides examples that demonstrate how to use a
+ * This file provides an example that demonstrate how to use a
  * MockFloat.
  */
 

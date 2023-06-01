@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file provides examples that demonstrate how to use a
+ * This file provides an example that demonstrate how to use a
  * MockMixedValue.
  */
 
@@ -15,7 +15,10 @@ require_once(
 
 use \Darling\PHPMockingUtilities\classes\mock\values\MockMixedValue;
 
-$mockMixedValue = new MockMixedValue();
+$mockMixedValue1 = new MockMixedValue();
 
-var_dump($mockMixedValue->value());
+var_dump($mockMixedValue1->value());
 
+$mockMixedValue2 = new MockMixedValue();
+
+var_dump($mockMixedValue2->value());

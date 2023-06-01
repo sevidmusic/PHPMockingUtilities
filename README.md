@@ -91,10 +91,6 @@ Example:
 ```
 <?php
 
-/**
- * This file provides examples that demonstrate how to use a MockBool.
- */
-
 require_once(
     __DIR__ .
     DIRECTORY_SEPARATOR .
@@ -125,11 +121,6 @@ Example:
 
 ```
 <?php
-
-/**
- * This file provides examples that demonstrate how to use a
- * MockClassInstance.
- */
 
 require_once(
     __DIR__ .
@@ -179,11 +170,6 @@ Example:
 ```
 <?php
 
-/**
- * This file provides examples that demonstrate how to use a
- * MockClosure.
- */
-
 require_once(
     __DIR__ .
     DIRECTORY_SEPARATOR .
@@ -219,11 +205,6 @@ Example:
 ```
 <?php
 
-/**
- * This file provides examples that demonstrate how to use a
- * MockFloat.
- */
-
 require_once(
     __DIR__ .
     DIRECTORY_SEPARATOR .
@@ -251,10 +232,6 @@ Example:
 
 ```
 <?php
-
-/**
- * This file provides examples that demonstrate how to use a MockInt.
- */
 
 require_once(
     __DIR__ .
@@ -284,11 +261,6 @@ Example:
 ```
 <?php
 
-/**
- * This file provides examples that demonstrate how to use a
- * MockMixedValue.
- */
-
 require_once(
     __DIR__ .
     DIRECTORY_SEPARATOR .
@@ -299,12 +271,22 @@ require_once(
 
 use \Darling\PHPMockingUtilities\classes\mock\values\MockMixedValue;
 
-$mockMixedValue = new MockMixedValue();
+$mockMixedValue = new MockMixedValue1();
 
-var_dump($mockMixedValue->value());
+var_dump($mockMixedValue1->value());
 
 // example output:
 string(62) "b7i0Doje1VuIXJsy4TkvMA5L3QhxqNHUmr9tSPOzfnRd8WEBc6Flw2CgGaZpYK"
+
+$mockMixedValue2 = new MockMixedValue();
+
+var_dump($mockMixedValue2->value());
+
+// example output
+class Darling\PHPTextTypes\classes\strings\Text#5 (1) {
+  private string $string =>
+  string(14) "MockMixedValue"
+}
 
 ```
 
@@ -316,11 +298,6 @@ Example:
 
 ```
 <?php
-
-/**
- * This file provides examples that demonstrate how to use a
- * MockString.
- */
 
 require_once(
     __DIR__ .

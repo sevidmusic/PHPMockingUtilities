@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file provides examples that demonstrate how to use a MockInt.
+ * This file provides an example that demonstrate how to use a MockInt.
  */
 
 require_once(

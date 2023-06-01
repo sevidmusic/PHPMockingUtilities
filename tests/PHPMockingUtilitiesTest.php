@@ -8,10 +8,10 @@ use Darling\PHPUnitTestUtilities\traits\PHPUnitTestMessages;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Defines common methods that may be useful to all roady test
- * classes.
+ * Defines common methods that may be useful to all
+ * PHPMockingUtilities test classes.
  *
- * All roady test classes must extend from this class.
+ * All PHPMockingUtilities test classes must extend from this class.
  *
  */
 class PHPMockingUtilitiesTest extends TestCase

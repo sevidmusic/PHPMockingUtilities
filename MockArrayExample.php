@@ -1,7 +1,8 @@
 <?php
 
 /**
- * This file provides examples that demonstrate how to use a MockArray.
+ * This file provides an example that demonstrate how to use a
+ * MockArray.
  */
 
 require_once(
