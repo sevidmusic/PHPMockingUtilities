@@ -1,6 +1,6 @@
 {
     "name": "darling/php-mocking-utilities",
-    "description": "The PHPMockingUtilities library provides classes that can be used to mock various types of values."
+    "description": "The PHPMockingUtilities library provides classes that can be used to mock various types of values.",
     "type": "library",
     "license": "MIT",
     "authors": [
