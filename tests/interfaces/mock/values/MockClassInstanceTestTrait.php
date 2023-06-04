@@ -668,6 +668,7 @@ trait MockClassInstanceTestTrait
             stdClass::class,
             parent::randomClassStringOrObjectInstance(),
             function(): void {},
+            new ReflectionClass(Text::class),
         ];
         return (
             empty($classes)
