@@ -17,6 +17,7 @@ use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\classes\strings\ClassString;
 use \Darling\PHPTextTypes\classes\strings\Text;
 use ReflectionMethod;
+use ReflectionParameter;
 use \ReflectionClass;
 use \ReflectionClassConstant;
 use \ReflectionProperty;
@@ -203,6 +204,9 @@ class MockClassInstance implements MockClassInstanceInterface
         }
         if($class === ReflectionMethod::class) {
             return new ReflectionMethod(Text::class, '__toString');
+        }
+        if($class === ReflectionParameter::class) {
+            return new ReflectionParameter([Text::class, '__construct'], 0);
         }
         if (method_exists($class, self::CONSTRUCT) === false) {
             return $this->reflectionClass($class)
