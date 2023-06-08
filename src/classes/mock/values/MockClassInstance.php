@@ -16,6 +16,7 @@ use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as Reflectio
 use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\classes\strings\ClassString;
 use \Darling\PHPTextTypes\classes\strings\Text;
+use ReflectionMethod;
 use \ReflectionClass;
 use \ReflectionClassConstant;
 use \ReflectionProperty;
@@ -199,6 +200,9 @@ class MockClassInstance implements MockClassInstanceInterface
         }
         if($class === ReflectionExtension::class) {
             return new ReflectionExtension('curl');
+        }
+        if($class === ReflectionMethod::class) {
+            return new ReflectionMethod(Text::class, '__toString');
         }
         if (method_exists($class, self::CONSTRUCT) === false) {
             return $this->reflectionClass($class)
