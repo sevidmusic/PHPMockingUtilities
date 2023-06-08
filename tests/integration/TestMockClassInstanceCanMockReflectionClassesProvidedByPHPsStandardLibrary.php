@@ -42,7 +42,7 @@ function intGenerator(int $max): Generator {
  * @return ReflectionClass<object>|ReflectionProperty
  *
  */
-function reflectionClassOrReflectionProperty(): mixed
+function instanceOfAStandardLibraryReflectionType(): mixed
 {
     /** @var array<ReflectionClass<object>|ReflectionProperty> $classes */
     $classes = [
@@ -77,7 +77,7 @@ function reflectionClassOrReflectionProperty(): mixed
 $mi = new MockClassInstance(
     new DarlingReflection(
         new ClassString(
-            reflectionClassOrReflectionProperty()
+            instanceOfAStandardLibraryReflectionType()
         )
     )
 );
