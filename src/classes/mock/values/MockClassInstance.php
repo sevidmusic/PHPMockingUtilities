@@ -17,6 +17,7 @@ use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\classes\strings\ClassString;
 use \Darling\PHPTextTypes\classes\strings\Text;
 use \ReflectionClass;
+use \ReflectionClassConstant;
 use \ReflectionProperty;
 use \ReflectionException;
 use \RuntimeException;
@@ -191,6 +192,9 @@ class MockClassInstance implements MockClassInstanceInterface
         }
         if($class === ReflectionProperty::class) {
             return new ReflectionProperty(Text::class, 'string');
+        }
+        if($class === ReflectionClassConstant::class) {
+            return new ReflectionClassConstant(MockClassInstance::class, 'CONSTRUCT');
         }
         if (method_exists($class, self::CONSTRUCT) === false) {
             return $this->reflectionClass($class)

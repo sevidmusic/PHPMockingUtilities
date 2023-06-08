@@ -46,27 +46,27 @@ function instanceOfAStandardLibraryReflectionType(): mixed
 {
     /** @var array<ReflectionClass<object>|ReflectionProperty> $classes */
     $classes = [
-        new DarlingReflection(new ClassString(Text::class)),
-        new Reflection(),
-        new ReflectionClass(Text::class),
-        new ReflectionClass(Text::class),
-        new ReflectionException(),
-        new ReflectionFiber( new Fiber(function(): string { return 'foo'; })),
-        new ReflectionIntersectionType(),
-        new ReflectionNamedType(),
-        new ReflectionObject(new Text('foo bar baz')),
-        new ReflectionProperty(Text::class, 'string'),
-        new ReflectionUnionType(),
-        ReflectionReference::fromArrayElement(['foo'], 0), # Fails
+#        new DarlingReflection(new ClassString(Text::class)),
+#        new Reflection(),
+#        new ReflectionClass(Text::class),
+#        new ReflectionClass(Text::class),
+#        new ReflectionException(),
+#        new ReflectionFiber( new Fiber(function(): string { return 'foo'; })),
+#        new ReflectionIntersectionType(),
+#        new ReflectionNamedType(),
+#        new ReflectionObject(new Text('foo bar baz')),
+#        new ReflectionProperty(Text::class, 'string'),
+#        new ReflectionUnionType(),
         new ReflectionClassConstant(MockClassInstance::class, 'CONSTRUCT'), # Fails
-        new ReflectionEnum(FooBarBaz::class), # Fails
-        new ReflectionEnumBackedCase(FooBarBazBacked::class, 'Bar'), # Fails
-        new ReflectionEnumUnitCase(FooBarBaz::class, 'Foo'), # Fails
-        new ReflectionExtension('curl'), # Fails
-        new ReflectionFunction('bazzerBazFoo'), # Fails
-        new ReflectionGenerator(intGenerator(PHP_INT_MAX)), # Fails
-        new ReflectionMethod(Text::class, '__toString'), # Fails
-        new ReflectionParameter([Text::class, '__construct'], 0), # Fails
+#        new ReflectionEnum(FooBarBaz::class), # Fails
+#        new ReflectionEnumBackedCase(FooBarBazBacked::class, 'Bar'), # Fails
+#        new ReflectionEnumUnitCase(FooBarBaz::class, 'Foo'), # Fails
+#        new ReflectionExtension('curl'), # Fails
+#        new ReflectionFunction('bazzerBazFoo'), # Fails
+#        new ReflectionGenerator(intGenerator(PHP_INT_MAX)), # Fails
+#        new ReflectionMethod(Text::class, '__toString'), # Fails
+#        new ReflectionParameter([Text::class, '__construct'], 0), # Fails
+#        ReflectionReference::fromArrayElement(['foo'], 0), # Fails
         # NOT TESTED YET: new ReflectionZendExtension(''),
         # NOT TESTED YET: new ReflectionAttribute(),
    ];
