@@ -20,6 +20,7 @@ use \ReflectionClass;
 use \ReflectionClassConstant;
 use \ReflectionProperty;
 use \ReflectionException;
+use \ReflectionExtension;
 use \RuntimeException;
 use \stdClass;
 
@@ -195,6 +196,9 @@ class MockClassInstance implements MockClassInstanceInterface
         }
         if($class === ReflectionClassConstant::class) {
             return new ReflectionClassConstant(MockClassInstance::class, 'CONSTRUCT');
+        }
+        if($class === ReflectionExtension::class) {
+            return new ReflectionExtension('curl');
         }
         if (method_exists($class, self::CONSTRUCT) === false) {
             return $this->reflectionClass($class)
