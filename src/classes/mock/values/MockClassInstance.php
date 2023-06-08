@@ -15,7 +15,9 @@ use \Darling\PHPReflectionUtilities\classes\utilities\Reflection;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
 use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\classes\strings\ClassString;
+use \Darling\PHPTextTypes\classes\strings\Text;
 use \ReflectionClass;
+use \ReflectionProperty;
 use \ReflectionException;
 use \RuntimeException;
 use \stdClass;
@@ -186,6 +188,9 @@ class MockClassInstance implements MockClassInstanceInterface
      {
         if($class === ReflectionClass::class) {
             return new ReflectionClass(UnknownClass::class);
+        }
+        if($class === ReflectionProperty::class) {
+            return new ReflectionProperty(Text::class, 'string');
         }
         if (method_exists($class, self::CONSTRUCT) === false) {
             return $this->reflectionClass($class)
