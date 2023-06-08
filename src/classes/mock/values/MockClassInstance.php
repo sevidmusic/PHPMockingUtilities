@@ -16,9 +16,10 @@ use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as Reflectio
 use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\classes\strings\ClassString;
 use \Darling\PHPTextTypes\classes\strings\Text;
-use ReflectionMethod;
-use ReflectionParameter;
+use \ReflectionMethod;
+use \ReflectionParameter;
 use \ReflectionClass;
+use \ReflectionFunction;
 use \ReflectionClassConstant;
 use \ReflectionProperty;
 use \ReflectionException;
@@ -208,6 +209,9 @@ class MockClassInstance implements MockClassInstanceInterface
         if($class === ReflectionParameter::class) {
             return new ReflectionParameter([Text::class, '__construct'], 0);
         }
+        if($class === ReflectionFunction::class) {
+            return new ReflectionFunction(function(): void {});
+        } //
         if (method_exists($class, self::CONSTRUCT) === false) {
             return $this->reflectionClass($class)
                         ->newInstanceArgs([]);

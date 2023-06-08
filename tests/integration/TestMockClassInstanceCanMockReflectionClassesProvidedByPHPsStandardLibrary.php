@@ -46,6 +46,8 @@ function instanceOfAStandardLibraryReflectionType(): mixed
 {
     /** @var array<ReflectionClass<object>|ReflectionProperty> $classes */
     $classes = [
+        new ReflectionParameter([Text::class, '__construct'], 0),
+#        new ReflectionFunction(function(): void {}),
 #        new ReflectionMethod(Text::class, '__toString'),
 #        new ReflectionExtension('curl'),
 #        new ReflectionClassConstant(MockClassInstance::class, 'CONSTRUCT'),
@@ -60,13 +62,10 @@ function instanceOfAStandardLibraryReflectionType(): mixed
 #        new ReflectionObject(new Text('foo bar baz')),
 #        new ReflectionProperty(Text::class, 'string'),
 #        new ReflectionUnionType(),
-#        // FAILS
-        new ReflectionParameter([Text::class, '__construct'], 0), # Fails
 #        // THE FOLLOWING WILL NEED MOCKS
 #        new ReflectionEnum(FooBarBaz::class), # Fails
 #        new ReflectionEnumBackedCase(FooBarBazBacked::class, 'Bar'), # Fails
 #        new ReflectionEnumUnitCase(FooBarBaz::class, 'Foo'), # Fails
-#        new ReflectionFunction('bazzerBazFoo'), # Fails
 #        new ReflectionGenerator(intGenerator(PHP_INT_MAX)), # Fails
 #        ReflectionReference::fromArrayElement(['foo'], 0), # Fails
         # NOT TESTED YET: new ReflectionZendExtension(''),
