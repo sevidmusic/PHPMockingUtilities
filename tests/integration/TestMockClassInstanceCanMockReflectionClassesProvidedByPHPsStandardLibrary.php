@@ -11,7 +11,6 @@ require(
 use \Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance;
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection as DarlingReflection;
 use \Darling\PHPTextTypes\classes\strings\ClassString;
-use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\classes\strings\Text;
 
 enum FooBarBaz
@@ -53,23 +52,23 @@ function instanceOfAStandardLibraryReflectionType(): mixed
     );
     /** @var array<ReflectionClass<object>|ReflectionProperty> $classes */
     $classes = [
-#        new ReflectionGenerator(intGenerator(PHP_INT_MAX)),
-#        new ReflectionParameter([Text::class, '__construct'], 0),
-#        new ReflectionFunction(function(): void {}),
-#        new ReflectionMethod(Text::class, '__toString'),
-#        new ReflectionExtension('curl'),
-#        new ReflectionClassConstant(MockClassInstance::class, 'CONSTRUCT'),
-#        new DarlingReflection(new ClassString(Text::class)),
-#        new Reflection(),
-#        new ReflectionClass(Text::class),
-#        new ReflectionClass(Text::class),
-#        new ReflectionException(),
-#        new ReflectionFiber( new Fiber(function(): string { return 'foo'; })),
-#        new ReflectionIntersectionType(),
-#        new ReflectionNamedType(),
-#        new ReflectionObject(new Text('foo bar baz')),
-#        new ReflectionProperty(Text::class, 'string'),
-#        new ReflectionUnionType(),
+        new ReflectionGenerator(intGenerator(PHP_INT_MAX)),
+        new ReflectionParameter([Text::class, '__construct'], 0),
+        new ReflectionFunction(function(): void {}),
+        new ReflectionMethod(Text::class, '__toString'),
+        new ReflectionExtension('curl'),
+        new ReflectionClassConstant(MockClassInstance::class, 'CONSTRUCT'),
+        new DarlingReflection(new ClassString(Text::class)),
+        new Reflection(),
+        new ReflectionClass(Text::class),
+        new ReflectionClass(Text::class),
+        new ReflectionException(),
+        new ReflectionFiber( new Fiber(function(): string { return 'foo'; })),
+        new ReflectionIntersectionType(),
+        new ReflectionNamedType(),
+        new ReflectionObject(new Text('foo bar baz')),
+        new ReflectionProperty(Text::class, 'string'),
+        new ReflectionUnionType(),
         $reflectionReference,
 #        // THE FOLLOWING WILL NEED MOCKS
 #        new ReflectionEnum(FooBarBaz::class), # Fails
