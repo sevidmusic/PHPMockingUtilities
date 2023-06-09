@@ -11,6 +11,7 @@ require(
 use \Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance;
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection as DarlingReflection;
 use \Darling\PHPTextTypes\classes\strings\ClassString;
+use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\classes\strings\Text;
 
 enum FooBarBaz
@@ -44,9 +45,16 @@ function intGenerator(int $max): Generator {
  */
 function instanceOfAStandardLibraryReflectionType(): mixed
 {
+    $referencedValue = 'value';
+    /** @var ReflectionReference $reflectionReference */
+    $reflectionReference = ReflectionReference::fromArrayElement(
+        [&$referencedValue],
+        0
+    );
     /** @var array<ReflectionClass<object>|ReflectionProperty> $classes */
     $classes = [
-        new ReflectionParameter([Text::class, '__construct'], 0),
+#        new ReflectionGenerator(intGenerator(PHP_INT_MAX)),
+#        new ReflectionParameter([Text::class, '__construct'], 0),
 #        new ReflectionFunction(function(): void {}),
 #        new ReflectionMethod(Text::class, '__toString'),
 #        new ReflectionExtension('curl'),
@@ -62,18 +70,17 @@ function instanceOfAStandardLibraryReflectionType(): mixed
 #        new ReflectionObject(new Text('foo bar baz')),
 #        new ReflectionProperty(Text::class, 'string'),
 #        new ReflectionUnionType(),
+        $reflectionReference,
 #        // THE FOLLOWING WILL NEED MOCKS
 #        new ReflectionEnum(FooBarBaz::class), # Fails
 #        new ReflectionEnumBackedCase(FooBarBazBacked::class, 'Bar'), # Fails
 #        new ReflectionEnumUnitCase(FooBarBaz::class, 'Foo'), # Fails
-#        new ReflectionGenerator(intGenerator(PHP_INT_MAX)), # Fails
-#        ReflectionReference::fromArrayElement(['foo'], 0), # Fails
-        # NOT TESTED YET: new ReflectionZendExtension(''),
-        # NOT TESTED YET: new ReflectionAttribute(),
+#        // NOT TESTED YET
+#        new ReflectionZendExtension(''),
+#        new ReflectionAttribute(),
    ];
     return $classes[array_rand($classes)];
 }
-
 
 $mi = new MockClassInstance(
     new DarlingReflection(
