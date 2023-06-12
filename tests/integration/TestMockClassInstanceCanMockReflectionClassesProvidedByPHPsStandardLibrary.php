@@ -70,10 +70,9 @@ function instanceOfAStandardLibraryReflectionType(): mixed
         new ReflectionProperty(Text::class, 'string'),
         new ReflectionUnionType(),
         $reflectionReference,
-#        // THE FOLLOWING WILL NEED MOCKS
-#        new ReflectionEnum(FooBarBaz::class), # Fails
-#        new ReflectionEnumBackedCase(FooBarBazBacked::class, 'Bar'), # Fails
-#        new ReflectionEnumUnitCase(FooBarBaz::class, 'Foo'), # Fails
+        new ReflectionEnum(FooBarBaz::class), # Fails
+        new ReflectionEnumBackedCase(FooBarBazBacked::class, 'Bar'), # Fails
+        new ReflectionEnumUnitCase(FooBarBaz::class, 'Foo'), # Fails
 #        // NOT TESTED YET
 #        new ReflectionZendExtension(''),
 #        new ReflectionAttribute(),

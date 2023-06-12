@@ -29,6 +29,9 @@ use \ReflectionProperty;
 use \ReflectionReference;
 use \RuntimeException;
 use \stdClass;
+use ReflectionEnum;
+use ReflectionEnumBackedCase;
+use ReflectionEnumUnitCase;
 
 class MockClassInstance implements MockClassInstanceInterface
 {
@@ -246,6 +249,20 @@ class MockClassInstance implements MockClassInstanceInterface
         }
         if($class === ReflectionGenerator::class) {
             return new ReflectionGenerator($this->mockGenerator());
+        }
+        if($class === ReflectionEnum::class) {
+            return new ReflectionEnum(Enum::class);
+        }
+        if($class === ReflectionEnumBackedCase::class) {
+            return new ReflectionEnumBackedCase(
+                BackedEnum::class, 'Bar'
+            );
+        }
+        if($class === ReflectionEnumUnitCase::class) {
+            return new ReflectionEnumUnitCase(
+                Enum::class,
+                'Foo'
+            );
         }
         if($class === ReflectionReference::class) {
             $referencedValue = 'referencedValue';
@@ -554,3 +571,16 @@ class MockClassInstance implements MockClassInstanceInterface
     }
 }
 
+enum Enum
+{
+    case Foo;
+    case Bar;
+    case Baz;
+}
+
+enum BackedEnum: string
+{
+    case Foo = 'foo';
+    case Bar = 'bar';
+    case Baz = 'baz';
+}
