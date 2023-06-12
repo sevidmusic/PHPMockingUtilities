@@ -20,6 +20,7 @@ use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\interfaces\strings\Name as NameInterface;
 use \Darling\PHPTextTypes\interfaces\strings\Text as TextInterface;
 use \ReflectionClass;
+use \ReflectionProperty;
 use \Stringable;
 use \stdClass;
 
@@ -669,6 +670,7 @@ trait MockClassInstanceTestTrait
             parent::randomClassStringOrObjectInstance(),
             function(): void {},
             new ReflectionClass(Text::class),
+            new ReflectionProperty(Text::class, 'string'),
         ];
         return (
             empty($classes)

@@ -13,12 +13,25 @@ use \Darling\PHPMockingUtilities\classes\mock\values\MockString;
 use \Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance as MockClassInstanceInterface;
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
-use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\classes\strings\ClassString;
+use \Darling\PHPTextTypes\classes\strings\Text;
+use \Darling\PHPTextTypes\classes\strings\UnknownClass;
+use \Generator;
 use \ReflectionClass;
+use \ReflectionClassConstant;
 use \ReflectionException;
+use \ReflectionExtension;
+use \ReflectionFunction;
+use \ReflectionGenerator;
+use \ReflectionMethod;
+use \ReflectionParameter;
+use \ReflectionProperty;
+use \ReflectionReference;
 use \RuntimeException;
 use \stdClass;
+use ReflectionEnum;
+use ReflectionEnumBackedCase;
+use ReflectionEnumUnitCase;
 
 class MockClassInstance implements MockClassInstanceInterface
 {
@@ -36,6 +49,35 @@ class MockClassInstance implements MockClassInstanceInterface
 
      /**
       * Instantiate a new instance of a MockClassInstance.
+      *
+      * Note: It is not possible to mock an instance of a class
+      * that defines a private `__construct()` method.
+      *
+      * For example, it would not be possible to mock either of the
+      * following classes:
+      *
+      * ```
+      * class A
+      * {
+      *     private function __construct() {}
+      *
+      *     public static function getInstance(): A
+      *     {
+      *         return new self();
+      *     }
+      * }
+      *
+      * class B
+      * {
+      *     private function __construct() {}
+      *
+      *     public static function getInstance(bool $parameter): ?B
+      *     {
+      *         return ($parameter === true ? new self() : null);
+      *     }
+      * }
+      *
+      * ```
       *
       * @example
       *
@@ -186,6 +228,50 @@ class MockClassInstance implements MockClassInstanceInterface
      {
         if($class === ReflectionClass::class) {
             return new ReflectionClass(UnknownClass::class);
+        }
+        if($class === ReflectionProperty::class) {
+            return new ReflectionProperty(Text::class, 'string');
+        }
+        if($class === ReflectionClassConstant::class) {
+            return new ReflectionClassConstant(MockClassInstance::class, 'CONSTRUCT');
+        }
+        if($class === ReflectionExtension::class) {
+            return new ReflectionExtension('curl');
+        }
+        if($class === ReflectionMethod::class) {
+            return new ReflectionMethod(Text::class, '__toString');
+        }
+        if($class === ReflectionParameter::class) {
+            return new ReflectionParameter([Text::class, '__construct'], 0);
+        }
+        if($class === ReflectionFunction::class) {
+            return new ReflectionFunction(function(): void {});
+        }
+        if($class === ReflectionGenerator::class) {
+            return new ReflectionGenerator($this->mockGenerator());
+        }
+        if($class === ReflectionEnum::class) {
+            return new ReflectionEnum(Enum::class);
+        }
+        if($class === ReflectionEnumBackedCase::class) {
+            return new ReflectionEnumBackedCase(
+                BackedEnum::class, 'Bar'
+            );
+        }
+        if($class === ReflectionEnumUnitCase::class) {
+            return new ReflectionEnumUnitCase(
+                Enum::class,
+                'Foo'
+            );
+        }
+        if($class === ReflectionReference::class) {
+            $referencedValue = 'referencedValue';
+            /** @var ReflectionReference $reflectionReference */
+            $reflectionReference = ReflectionReference::fromArrayElement(
+                [&$referencedValue],
+                0
+            );
+            return $reflectionReference;
         }
         if (method_exists($class, self::CONSTRUCT) === false) {
             return $this->reflectionClass($class)
@@ -446,5 +532,55 @@ class MockClassInstance implements MockClassInstanceInterface
         return $type === \Closure::class || $type === 'callable';
     }
 
+    /**
+     * This method is used by MockClassInstance::getClassInstance()
+     * to mock a ReflectionGenerator.
+     *
+     * This Generator will be passed to the __construct() method of
+     * the ReflectionGenerator being mocked.
+     *
+     * @return Generator
+     *
+     * @example
+     *
+     * ```
+     *
+     * class MockClassInstance implements MockClassInstanceInterface
+     * {
+     * private function getClassInstance(
+     *     string|object $class,
+     *     array $constructorArguments = []
+     * ): object
+     *     {
+     *         ...
+     *         if($class === ReflectionGenerator::class) {
+     *             return new ReflectionGenerator(mockGenerator());
+     *         }
+     *         ...
+     *     }
+     * }
+     *
+     * ```
+     *
+     */
+    private function mockGenerator(): Generator {
+        $max = rand(10, 100);
+        for ($i = 1; $i <= $max; $i++) {
+            yield $i;
+        }
+    }
 }
 
+enum Enum
+{
+    case Foo;
+    case Bar;
+    case Baz;
+}
+
+enum BackedEnum: string
+{
+    case Foo = 'foo';
+    case Bar = 'bar';
+    case Baz = 'baz';
+}
