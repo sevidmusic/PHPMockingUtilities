@@ -245,7 +245,7 @@ class MockClassInstance implements MockClassInstanceInterface
             return new ReflectionFunction(function(): void {});
         }
         if($class === ReflectionGenerator::class) {
-            return new ReflectionGenerator(mockGenerator());
+            return new ReflectionGenerator($this->mockGenerator());
         }
         if($class === ReflectionReference::class) {
             $referencedValue = 'referencedValue';
@@ -515,48 +515,42 @@ class MockClassInstance implements MockClassInstanceInterface
         return $type === \Closure::class || $type === 'callable';
     }
 
-}
-
-/**
- * mockGenerator() is used by MockClassInstance::getClassInstance()
- * to mock a ReflectionGenerator.
- *
- * This Generator will be passed to the __construct() method of
- * the ReflectionGenerator being mocked.
- *
- * @return Generator
- *
- * @example
- *
- * ```
- *
- * class MockClassInstance implements MockClassInstanceInterface
- * {
- * private function getClassInstance(
- *     string|object $class,
- *     array $constructorArguments = []
- * ): object
- *     {
- *         ...
- *         if($class === ReflectionGenerator::class) {
- *             return new ReflectionGenerator(mockGenerator());
- *         }
- *         ...
- *     }
- * }
- *
- * ```
- *
- * This is defined here because it's only purpose is to allow
- * the MockClassInstance to mock a ReflectionGenerator.
- *
- * It should not be used anywhere else, so there is no need
- * define it somewhere else.
- *
- */
-function mockGenerator(): Generator {
-    $max = rand(10, 100);
-    for ($i = 1; $i <= $max; $i++) {
-        yield $i;
+    /**
+     * This method is used by MockClassInstance::getClassInstance()
+     * to mock a ReflectionGenerator.
+     *
+     * This Generator will be passed to the __construct() method of
+     * the ReflectionGenerator being mocked.
+     *
+     * @return Generator
+     *
+     * @example
+     *
+     * ```
+     *
+     * class MockClassInstance implements MockClassInstanceInterface
+     * {
+     * private function getClassInstance(
+     *     string|object $class,
+     *     array $constructorArguments = []
+     * ): object
+     *     {
+     *         ...
+     *         if($class === ReflectionGenerator::class) {
+     *             return new ReflectionGenerator(mockGenerator());
+     *         }
+     *         ...
+     *     }
+     * }
+     *
+     * ```
+     *
+     */
+    private function mockGenerator(): Generator {
+        $max = rand(10, 100);
+        for ($i = 1; $i <= $max; $i++) {
+            yield $i;
+        }
     }
 }
+
