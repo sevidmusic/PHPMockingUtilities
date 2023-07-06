@@ -70,9 +70,9 @@ function instanceOfAStandardLibraryReflectionType(): mixed
         new ReflectionProperty(Text::class, 'string'),
         new ReflectionUnionType(),
         $reflectionReference,
-        new ReflectionEnum(FooBarBaz::class), # Fails
-        new ReflectionEnumBackedCase(FooBarBazBacked::class, 'Bar'), # Fails
-        new ReflectionEnumUnitCase(FooBarBaz::class, 'Foo'), # Fails
+        new ReflectionEnum(FooBarBaz::class),
+        new ReflectionEnumBackedCase(FooBarBazBacked::class, 'Bar'),
+        new ReflectionEnumUnitCase(FooBarBaz::class, 'Foo'),
 #        // NOT TESTED YET
 #        new ReflectionZendExtension(''),
 #        new ReflectionAttribute(),
@@ -80,13 +80,16 @@ function instanceOfAStandardLibraryReflectionType(): mixed
     return $classes[array_rand($classes)];
 }
 
+$instance = instanceOfAStandardLibraryReflectionType();
 $mi = new MockClassInstance(
-    new DarlingReflection(
-        new ClassString(
-            instanceOfAStandardLibraryReflectionType()
-        )
-    )
+    new DarlingReflection(new ClassString($instance))
 );
 
-var_dump($mi->mockInstance());
+echo "\033[38;5;0m\033[48;5;111mRunning test" . __FILE__ . " \033[48;5;0m";
+
+if($mi->mockInstance()::class === $instance::class) {
+    echo "\033[38;5;0m\033[48;5;84mPassed\033[48;5;0m";
+} else {
+    echo "\033[38;5;0m\033[48;5;196mFailed\033[48;5;0m";
+}
 
