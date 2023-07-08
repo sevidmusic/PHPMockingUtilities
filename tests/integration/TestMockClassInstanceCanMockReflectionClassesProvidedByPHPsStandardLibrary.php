@@ -8,24 +8,13 @@ require(
     ) . DIRECTORY_SEPARATOR . 'autoload.php'
 );
 
+use \Darling\PHPMockingUtilities\tests\mock\classes\AnAttributeClass;
+use \Darling\PHPMockingUtilities\tests\mock\classes\TestEnum;
+use \Darling\PHPMockingUtilities\tests\mock\classes\TestEnumBacked;
 use \Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance;
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection as DarlingReflection;
 use \Darling\PHPTextTypes\classes\strings\ClassString;
 use \Darling\PHPTextTypes\classes\strings\Text;
-
-enum FooBarBaz
-{
-    case Foo;
-    case Bar;
-    case Baz;
-}
-
-enum FooBarBazBacked: string
-{
-    case Foo = 'foo';
-    case Bar = 'bar';
-    case Baz = 'baz';
-}
 
 function bazzerBazFoo(): void {}
 
@@ -35,14 +24,15 @@ function intGenerator(int $max): Generator {
     }
 }
 
+
 /**
- * Return an instance of either a ReflectionClass or
- * a ReflectionProperty.
+ * Return a instance of a PHP standard library reflection class or
+ * a Darling PHP reflection utilities class.
  *
- * @return ReflectionClass<object>|ReflectionProperty
+ * @return DarlingReflection|Reflection|ReflectionAttribute<object>|ReflectionClass<AnAttributeClass>|ReflectionClass<Text>|ReflectionClassConstant|ReflectionEnum|ReflectionException|ReflectionExtension|ReflectionFiber|ReflectionFunction|ReflectionGenerator|ReflectionIntersectionType|ReflectionMethod|ReflectionNamedType|ReflectionObject|ReflectionParameter|ReflectionProperty|ReflectionReference|ReflectionUnionType
  *
  */
-function instanceOfAStandardLibraryReflectionType(): mixed
+function instanceOfAPHPStandardLibraryReflectionOrDarlingPHPReflectionUtilitiesClass(): DarlingReflection|Reflection|ReflectionAttribute|ReflectionClass|ReflectionClassConstant|ReflectionEnum|ReflectionException|ReflectionExtension|ReflectionFiber|ReflectionFunction|ReflectionGenerator|ReflectionIntersectionType|ReflectionMethod|ReflectionNamedType|ReflectionObject|ReflectionParameter|ReflectionProperty|ReflectionReference|ReflectionUnionType
 {
     $referencedValue = 'value';
     /** @var ReflectionReference $reflectionReference */
@@ -50,7 +40,8 @@ function instanceOfAStandardLibraryReflectionType(): mixed
         [&$referencedValue],
         0
     );
-    /** @var array<ReflectionClass<object>|ReflectionProperty> $classes */
+    $reflectedClassWithAttributes = new ReflectionClass(AnAttributeClass::class);
+    $attributes = $reflectedClassWithAttributes->getAttributes();
     $classes = [
         new ReflectionGenerator(intGenerator(PHP_INT_MAX)),
         new ReflectionParameter([Text::class, '__construct'], 0),
@@ -61,35 +52,57 @@ function instanceOfAStandardLibraryReflectionType(): mixed
         new DarlingReflection(new ClassString(Text::class)),
         new Reflection(),
         new ReflectionClass(Text::class),
-        new ReflectionClass(Text::class),
         new ReflectionException(),
-        new ReflectionFiber( new Fiber(function(): string { return 'foo'; })),
+        new ReflectionFiber(new Fiber(function(): string { return 'foo'; })),
         new ReflectionIntersectionType(),
         new ReflectionNamedType(),
         new ReflectionObject(new Text('foo bar baz')),
         new ReflectionProperty(Text::class, 'string'),
         new ReflectionUnionType(),
         $reflectionReference,
-        new ReflectionEnum(FooBarBaz::class),
-        new ReflectionEnumBackedCase(FooBarBazBacked::class, 'Bar'),
-        new ReflectionEnumUnitCase(FooBarBaz::class, 'Foo'),
+        new ReflectionEnum(TestEnum::class),
+        new ReflectionEnumBackedCase(TestEnumBacked::class, 'Bar'),
+        new ReflectionEnumUnitCase(TestEnum::class, 'Foo'),
+        (
+            # Testing ReflectionAttribute() which cannot be
+            # instantiated because of a private __construct()
+            isset($attributes[0])
+            ? $attributes[0]
+            : new ReflectionClass(AnAttributeClass::class)
+        ),
 #        // NOT TESTED YET
 #        new ReflectionZendExtension(''),
-#        new ReflectionAttribute(),
    ];
     return $classes[array_rand($classes)];
 }
 
-$instance = instanceOfAStandardLibraryReflectionType();
+$instance = instanceOfAPHPStandardLibraryReflectionOrDarlingPHPReflectionUtilitiesClass();
 $mi = new MockClassInstance(
     new DarlingReflection(new ClassString($instance))
 );
 
+// Determine if class defines a __construct method, if so reflect it.
+if(method_exists($instance::class, '__construct')) {
+    $constructorReflection = new ReflectionMethod($instance::class, '__construct');
+}
+
 echo "\033[38;5;0m\033[48;5;111mRunning test" . __FILE__ . " \033[48;5;0m";
 
-if($mi->mockInstance()::class === $instance::class) {
-    echo "\033[38;5;0m\033[48;5;84mPassed\033[48;5;0m";
+/**
+ * If the class defines a private __construct method a
+ * RuntimeException should be returned by $mi->mockInstance()
+ */
+if(isset($constructorReflection) && $constructorReflection->isPrivate()) {
+    if($mi->mockInstance()::class === RuntimeException::class) {
+        echo "\033[38;5;0m\033[48;5;84mPassed\033[48;5;0m";
+    } else {
+        echo "\033[38;5;0m\033[48;5;196mFailed\033[48;5;0m";
+    }
 } else {
-    echo "\033[38;5;0m\033[48;5;196mFailed\033[48;5;0m";
+    if($mi->mockInstance()::class === $instance::class) {
+        echo "\033[38;5;0m\033[48;5;84mPassed\033[48;5;0m";
+    } else {
+        echo "\033[38;5;0m\033[48;5;196mFailed\033[48;5;0m";
+    }
 }
 
