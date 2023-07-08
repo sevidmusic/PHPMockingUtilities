@@ -3,13 +3,16 @@
 namespace Darling\PHPMockingUtilities\tests\interfaces\mock\values;
 
 use \Closure;
-use \Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance as MockClassInstanceFOO;
+use \Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance as MockClassInstanceImplementation;
 use \Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance;
 use \Darling\PHPMockingUtilities\tests\PHPMockingUtilitiesTest;
 use \Darling\PHPMockingUtilities\tests\interfaces\mock\values\MockClassInstanceTestTrait;
 use \Darling\PHPMockingUtilities\tests\mock\abstractions\AbstractImplementationOfInterfaceForClassThatDefinesMethods;
+use \Darling\PHPMockingUtilities\tests\mock\classes\AnAttributeClass;
 use \Darling\PHPMockingUtilities\tests\mock\classes\ClassThatDoesNotDefineMethods;
 use \Darling\PHPMockingUtilities\tests\mock\classes\ImplementationOfInterfaceForClassThatDefinesMethods;
+use \Darling\PHPMockingUtilities\tests\mock\classes\TestEnum;
+use \Darling\PHPMockingUtilities\tests\mock\classes\TestEnumBacked;
 use \Darling\PHPMockingUtilities\tests\mock\interfaces\InterfaceForClassThatDefinesMethods;
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection as ReflectionInstance;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection;
@@ -19,8 +22,28 @@ use \Darling\PHPTextTypes\classes\strings\Text;
 use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\interfaces\strings\Name as NameInterface;
 use \Darling\PHPTextTypes\interfaces\strings\Text as TextInterface;
+use \Fiber;
+use \Generator;
+use \Reflection as PHPStandardReflection;
 use \ReflectionClass;
+use \ReflectionClassConstant;
+use \ReflectionEnum;
+use \ReflectionEnumBackedCase;
+use \ReflectionEnumUnitCase;
+use \RuntimeException;
+use \ReflectionException;
+use \ReflectionExtension;
+use \ReflectionFiber;
+use \ReflectionFunction;
+use \ReflectionGenerator;
+use \ReflectionIntersectionType;
+use \ReflectionMethod;
+use \ReflectionNamedType;
+use \ReflectionObject;
+use \ReflectionParameter;
 use \ReflectionProperty;
+use \ReflectionReference;
+use \ReflectionUnionType;
 use \Stringable;
 use \stdClass;
 
@@ -194,53 +217,100 @@ trait MockClassInstanceTestTrait
     /**
      * Test that the mockInstance() method returns an instance of
      * a class of the same type as the class or object instance
-     * reflected by the expected Reflection.
-     *
+     * reflected by the expected Reflection, or an instance of a
+     * RuntimeException if the class to be mocked defines a private
+     * __construct() method.
+
      * @covers MockClassInstance->mockInstance()
      *
      */
-    public function test_mock_instance_returns_an_instance_of_the_same_type_as_the_class_or_object_instance_reflected_by_the_expected_reflection(): void
+    public function test_mock_instance_returns_an_instance_of_the_same_type_as_the_class_or_object_instance_reflected_by_the_expected_reflection_or_an_instance_of_a_RuntimeException_if_the_class_to_be_mocked_defines_a_private_constructor(): void
     {
-        $this->assertEquals(
-            $this->expectedReflection()->type()->__toString(),
-            $this->mockClassInstanceTestInstance()
-                 ->mockInstance()::class,
-            $this->testFailedMessage(
-                $this->mockClassInstanceTestInstance(),
-                'mockClassInstance',
-                'return an instance of the same type as the ' .
-                'class or object instance reflected by the ' .
-                'expected Reflection'
-            )
-        );
+        $expectedReflection = $this->expectedReflection()->type()->__toString();
+        if(method_exists($expectedReflection, '__construct')) {
+            $reflectedConstructor = new  ReflectionMethod($expectedReflection, '__construct');
+        }
+        match($expectedReflection !== ReflectionReference::class && $expectedReflection !== Closure::class && isset($reflectedConstructor) && $reflectedConstructor->isPrivate()) {
+            true =>
+                $this->assertEquals(
+                    RuntimeException::class,
+                    $this->mockClassInstanceTestInstance()
+                         ->mockInstance()::class,
+                    $this->testFailedMessage(
+                        $this->mockClassInstanceTestInstance(),
+                        'mockClassInstance',
+                        'return an instance a ' .
+                        RuntimeException::class .
+                        'if the class to be mocked defines a ' .
+                        'private __construct() method'
+                    )
+                ),
+            default =>
+                $this->assertEquals(
+                    $this->expectedReflection()->type()->__toString(),
+                    $this->mockClassInstanceTestInstance()
+                         ->mockInstance()::class,
+                    $this->testFailedMessage(
+                        $this->mockClassInstanceTestInstance(),
+                        'mockClassInstance',
+                        'return an instance of the same type as the ' .
+                        'class or object instance reflected by the ' .
+                        'expected Reflection'
+                    )
+                ),
+        };
     }
 
     /**
      * Test that the mockInstance() method returns an instance of
      * a class of the same type as the class or object instance
      * reflected by Reflection returned by the the MockClassInstance's
-     * reflection() meethod.
+     * reflection() method, or an instance of a RuntimeException
+     * if the class to be mocked defines a private __construct()
+     * method.
      *
      * @covers MockClassInstance->mockInstance()
      *
      */
-    public function test_mock_instance_returns_an_instance_of_the_same_type_as_the_class_or_object_instance_reflected_by_the_reflection_returned_by_the_mock_class_instances_reflection_method(): void
+    public function test_mock_instance_returns_an_instance_of_the_same_type_as_the_class_or_object_instance_reflected_by_the_reflection_returned_by_the_mock_class_instances_reflection_method_or_an_instance_of_a_RuntimeException_if_the_class_to_be_mocked_defines_a_private_constructor(): void
     {
-        $this->assertEquals(
-            $this->mockClassInstanceTestInstance()
-                 ->reflection()
-                 ->type()
-                 ->__toString(),
-             $this->mockClassInstanceTestInstance()
-                  ->mockInstance()::class,
-            $this->testFailedMessage(
-                $this->mockClassInstanceTestInstance(),
-                'mockClassInstance',
-                'return an instance of the same type as the ' .
-                'class or object instance reflected by the ' .
-                'MockClassInstance\'s reflection() method'
-            )
-        );
+
+        $expectedReflection = $this->expectedReflection()->type()->__toString();
+        if(method_exists($expectedReflection, '__construct')) {
+            $reflectedConstructor = new  ReflectionMethod($expectedReflection, '__construct');
+        }
+        match($expectedReflection !== ReflectionReference::class && $expectedReflection !== Closure::class && isset($reflectedConstructor) && $reflectedConstructor->isPrivate()) {
+            true =>
+                $this->assertEquals(
+                    RuntimeException::class,
+                    $this->mockClassInstanceTestInstance()
+                         ->mockInstance()::class,
+                    $this->testFailedMessage(
+                        $this->mockClassInstanceTestInstance(),
+                        'mockClassInstance',
+                        'return an instance a ' .
+                        RuntimeException::class .
+                        'if the class to be mocked defines a ' .
+                        'private __construct() method'
+                    )
+                ),
+            default =>
+                $this->assertEquals(
+                    $this->mockClassInstanceTestInstance()
+                         ->reflection()
+                         ->type()
+                         ->__toString(),
+                     $this->mockClassInstanceTestInstance()
+                          ->mockInstance()::class,
+                    $this->testFailedMessage(
+                        $this->mockClassInstanceTestInstance(),
+                        'mockClassInstance',
+                        'return an instance of the same type as the ' .
+                        'class or object instance reflected by the ' .
+                        'MockClassInstance\'s reflection() method'
+                    )
+                ),
+        };
     }
 
     /**
@@ -650,27 +720,49 @@ trait MockClassInstanceTestTrait
      */
     protected function randomClassStringOrObjectInstance(): string|object
     {
+        $reflectedClassWithAttributes = new ReflectionClass(AnAttributeClass::class);
+        $attributes = $reflectedClassWithAttributes->getAttributes();
         /** @var array<int, class-string|object> $classes */
         $classes = [
-            parent::randomClassStringOrObjectInstance(),
             AbstractImplementationOfInterfaceForClassThatDefinesMethods::class,
             ClassThatDoesNotDefineMethods::class,
             ImplementationOfInterfaceForClassThatDefinesMethods::class,
-            new ImplementationOfInterfaceForClassThatDefinesMethods(),
             InterfaceForClassThatDefinesMethods::class,
             Name::class,
             NameInterface::class,
             Text::class,
             TextInterface::class,
+            function(): void {},
             new ClassThatDoesNotDefineMethods(),
+            new ImplementationOfInterfaceForClassThatDefinesMethods(),
             new Name(new Text($this->randomChars())),
+            new PHPStandardReflection(),
+            new ReflectionClass(Text::class),
+            new ReflectionClass(Text::class),
+            new ReflectionClassConstant(MockClassInstanceImplementation::class, 'CONSTRUCT'),
+            new ReflectionEnum(TestEnum::class),
+            new ReflectionEnumBackedCase(TestEnumBacked::class, 'Bar'),
+            new ReflectionEnumUnitCase(TestEnum::class, 'Foo'),
+            new ReflectionException(),
+            new ReflectionExtension('curl'),
+            new ReflectionFiber( new Fiber(function(): string { return 'foo'; })),
+            new ReflectionFunction(function(): void {}),
+            new ReflectionGenerator($this->intGenerator(PHP_INT_MAX)),
+            new ReflectionInstance(new ClassString(Text::class)),
+            new ReflectionIntersectionType(),
+            new ReflectionMethod(Text::class, '__toString'),
+            new ReflectionNamedType(),
+            new ReflectionObject(new Text('foo bar baz')),
+            new ReflectionParameter([Text::class, '__construct'], 0),
+            new ReflectionProperty(Text::class, 'string'),
+            new ReflectionProperty(Text::class, 'string'),
+            new ReflectionUnionType(),
             new Text($this->randomChars()),
             new stdClass(),
-            stdClass::class,
             parent::randomClassStringOrObjectInstance(),
-            function(): void {},
-            new ReflectionClass(Text::class),
-            new ReflectionProperty(Text::class, 'string'),
+            parent::randomClassStringOrObjectInstance(),
+            stdClass::class,
+           $this->reflectionReference(),
         ];
         return (
             empty($classes)
@@ -678,5 +770,30 @@ trait MockClassInstanceTestTrait
             : $classes[array_rand($classes)]
         );
     }
+
+    private function intGenerator(int $max): Generator {
+        for ($i = 1; $i <= $max; $i++) {
+            yield $i;
+        }
+    }
+
+    private function reflectionReference(): ReflectionReference|ClassString
+    {
+        $referencedValue = 'value';
+        $reflectionReference = ReflectionReference::fromArrayElement(
+            [&$referencedValue],
+            0
+        );
+        return $reflectionReference ?? new ClassString(ReflectionReference::class);
+    }
 }
 
+/*
+ *
+
+            (
+                isset($attributes[0])
+                ? $attributes[0]
+                : new ReflectionClass(AnAttributeClass::class)
+            ),
+ */

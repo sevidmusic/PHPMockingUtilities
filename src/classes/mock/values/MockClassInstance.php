@@ -277,6 +277,20 @@ class MockClassInstance implements MockClassInstanceInterface
             return $this->reflectionClass($class)
                         ->newInstanceArgs([]);
         }
+        $constructReflection = new ReflectionMethod($class, self::CONSTRUCT);
+        if($constructReflection->isPrivate()) {
+            return new RuntimeException(
+                'The ' .
+                (is_object($class) ? $class::class : $class) .
+                ' class defines a private ' .
+                self::CONSTRUCT .
+                ' method. '  .
+                'It is not possible to mock an instance of a ' .
+                'class that defines a private ' .
+                self::CONSTRUCT .
+                ' method'
+            );
+        }
         return match(empty($constructorArguments)) {
             true => $this->reflectionClass($class)
                         ->newInstanceArgs(
