@@ -195,6 +195,169 @@ trait MockClassInstanceTestTrait
     }
 
     /**
+     * Determine the type of the specified value.
+     *
+     * @return string
+     *
+     * @example
+     *
+     * ```
+     * var_dump(determineType(mixed $value));
+     *
+     * // example output:
+     * string(3) "int"
+     *
+     * ```
+     *
+     */
+    private function determineType(mixed $value): string
+    {
+        /**
+         * String replacements are to insure consistency.
+         *
+         * For example:
+         *
+         * gettype() will return the string 'double' for a float.
+         *
+         * Hpwever, Reflection->methodParameterTypes() uses the
+         * string 'float' to indicate a float, so to insure there
+         * are not false positives that trigger a failing test,
+         * we need to insure determineType() returns a string that
+         * will match one of the strings used to indicate type in
+         * the array returned by Reflection->methodParameterTypes().
+         */
+        return
+            is_object($value)
+            ? $value::class
+            : str_replace(
+                [ 'integer', 'boolean', 'double'],
+                [ 'int', 'bool', 'float'],
+                gettype($value)
+        );
+    }
+
+    /**
+     * Return a randomly selected name of a method defined by the
+     * class or object instance reflected by the Reflection returned
+     * by the MockClassInstance's reflection() method.
+     *
+     * @return string
+     *
+     * @example
+     *
+     * ```
+     * $this->randomNameOfMethodDefinedByReflectedClass();
+     *
+     * ```
+     *
+     */
+    private function randomNameOfMethodDefinedByReflectedClass(): string
+    {
+        $methodNames = $this->mockClassInstanceTestInstance()
+                            ->reflection()
+                            ->methodNames();
+        if(
+            empty($methodNames)
+            ||
+            $this->mockClassInstanceTestInstance()
+                 ->reflection()
+                 ->type()
+                 ->__toString()
+             === Closure::class
+        ) {
+            return '';
+
+        }
+        return $methodNames[array_rand($methodNames)];
+    }
+
+    /**
+     * Return a random fully qualified class name, or object instance.
+     *
+     * @return class-string|object
+     *
+     * @example
+     *
+     * ```
+     * var_dump($this->randomClassStringOrObjectInstance);
+     *
+     * // example output:
+     * string(8) "stdClass"
+     *
+     * ```
+     *
+     */
+    protected function randomClassStringOrObjectInstance(): string|object
+    {
+        $reflectedClassWithAttributes = new ReflectionClass(AnAttributeClass::class);
+        $attributes = $reflectedClassWithAttributes->getAttributes();
+        /** @var array<int, class-string|object> $classes */
+        $classes = [
+            $this->reflectionReference(),
+            ($attributes[0] ?? new ReflectionClass(AnAttributeClass::class)),
+            AbstractImplementationOfInterfaceForClassThatDefinesMethods::class,
+            ClassThatDoesNotDefineMethods::class,
+            ImplementationOfInterfaceForClassThatDefinesMethods::class,
+            InterfaceForClassThatDefinesMethods::class,
+            Name::class,
+            NameInterface::class,
+            Text::class,
+            TextInterface::class,
+            function(): void {},
+            new ClassThatDoesNotDefineMethods(),
+            new ImplementationOfInterfaceForClassThatDefinesMethods(),
+            new Name(new Text($this->randomChars())),
+            new PHPStandardReflection(),
+            new ReflectionClass(Text::class),
+            new ReflectionClass(Text::class),
+            new ReflectionClassConstant(MockClassInstanceImplementation::class, 'CONSTRUCT'),
+            new ReflectionEnum(TestEnum::class),
+            new ReflectionEnumBackedCase(TestEnumBacked::class, 'Bar'),
+            new ReflectionEnumUnitCase(TestEnum::class, 'Foo'),
+            new ReflectionException(),
+            new ReflectionExtension('curl'),
+            new ReflectionFiber(new Fiber(function(): string { return 'foo'; })),
+            new ReflectionFunction(function(): void {}),
+            new ReflectionGenerator($this->intGenerator(PHP_INT_MAX)),
+            new ReflectionInstance(new ClassString(Text::class)),
+            new ReflectionIntersectionType(),
+            new ReflectionMethod(Text::class, '__toString'),
+            new ReflectionNamedType(),
+            new ReflectionObject(new Text('foo bar baz')),
+            new ReflectionParameter([Text::class, '__construct'], 0),
+            new ReflectionProperty(Text::class, 'string'),
+            new ReflectionProperty(Text::class, 'string'),
+            new ReflectionUnionType(),
+            new Text($this->randomChars()),
+            new stdClass(),
+            parent::randomClassStringOrObjectInstance(),
+            parent::randomClassStringOrObjectInstance(),
+            stdClass::class,
+        ];
+        return (
+            empty($classes)
+            ? new stdClass()
+            : $classes[array_rand($classes)]
+        );
+    }
+
+    private function intGenerator(int $max): Generator {
+        for ($i = 1; $i <= $max; $i++) {
+            yield $i;
+        }
+    }
+
+    private function reflectionReference(): ReflectionReference|ClassString
+    {
+        $referencedValue = 'value';
+        $reflectionReference = ReflectionReference::fromArrayElement(
+            [&$referencedValue],
+            0
+        );
+        return $reflectionReference ?? new ClassString(ReflectionReference::class);
+    }
+
+    /**
      * Test that the reflection method returns the expected
      * Reflection.
      *
@@ -625,167 +788,5 @@ trait MockClassInstanceTestTrait
         );
     }
 
-    /**
-     * Determine the type of the specified value.
-     *
-     * @return string
-     *
-     * @example
-     *
-     * ```
-     * var_dump(determineType(mixed $value));
-     *
-     * // example output:
-     * string(3) "int"
-     *
-     * ```
-     *
-     */
-    private function determineType(mixed $value): string
-    {
-        /**
-         * String replacements are to insure consistency.
-         *
-         * For example:
-         *
-         * gettype() will return the string 'double' for a float.
-         *
-         * Hpwever, Reflection->methodParameterTypes() uses the
-         * string 'float' to indicate a float, so to insure there
-         * are not false positives that trigger a failing test,
-         * we need to insure determineType() returns a string that
-         * will match one of the strings used to indicate type in
-         * the array returned by Reflection->methodParameterTypes().
-         */
-        return
-            is_object($value)
-            ? $value::class
-            : str_replace(
-                [ 'integer', 'boolean', 'double'],
-                [ 'int', 'bool', 'float'],
-                gettype($value)
-        );
-    }
-
-    /**
-     * Return a randomly selected name of a method defined by the
-     * class or object instance reflected by the Reflection returned
-     * by the MockClassInstance's reflection() method.
-     *
-     * @return string
-     *
-     * @example
-     *
-     * ```
-     * $this->randomNameOfMethodDefinedByReflectedClass();
-     *
-     * ```
-     *
-     */
-    private function randomNameOfMethodDefinedByReflectedClass(): string
-    {
-        $methodNames = $this->mockClassInstanceTestInstance()
-                            ->reflection()
-                            ->methodNames();
-        if(
-            empty($methodNames)
-            ||
-            $this->mockClassInstanceTestInstance()
-                 ->reflection()
-                 ->type()
-                 ->__toString()
-             === Closure::class
-        ) {
-            return '';
-
-        }
-        return $methodNames[array_rand($methodNames)];
-    }
-
-    /**
-     * Return a random fully qualified class name, or object instance.
-     *
-     * @return class-string|object
-     *
-     * @example
-     *
-     * ```
-     * var_dump($this->randomClassStringOrObjectInstance);
-     *
-     * // example output:
-     * string(8) "stdClass"
-     *
-     * ```
-     *
-     */
-    protected function randomClassStringOrObjectInstance(): string|object
-    {
-        $reflectedClassWithAttributes = new ReflectionClass(AnAttributeClass::class);
-        $attributes = $reflectedClassWithAttributes->getAttributes();
-        /** @var array<int, class-string|object> $classes */
-        $classes = [
-            $this->reflectionReference(),
-            ($attributes[0] ?? new ReflectionClass(AnAttributeClass::class)),
-            AbstractImplementationOfInterfaceForClassThatDefinesMethods::class,
-            ClassThatDoesNotDefineMethods::class,
-            ImplementationOfInterfaceForClassThatDefinesMethods::class,
-            InterfaceForClassThatDefinesMethods::class,
-            Name::class,
-            NameInterface::class,
-            Text::class,
-            TextInterface::class,
-            function(): void {},
-            new ClassThatDoesNotDefineMethods(),
-            new ImplementationOfInterfaceForClassThatDefinesMethods(),
-            new Name(new Text($this->randomChars())),
-            new PHPStandardReflection(),
-            new ReflectionClass(Text::class),
-            new ReflectionClass(Text::class),
-            new ReflectionClassConstant(MockClassInstanceImplementation::class, 'CONSTRUCT'),
-            new ReflectionEnum(TestEnum::class),
-            new ReflectionEnumBackedCase(TestEnumBacked::class, 'Bar'),
-            new ReflectionEnumUnitCase(TestEnum::class, 'Foo'),
-            new ReflectionException(),
-            new ReflectionExtension('curl'),
-            new ReflectionFiber(new Fiber(function(): string { return 'foo'; })),
-            new ReflectionFunction(function(): void {}),
-            new ReflectionGenerator($this->intGenerator(PHP_INT_MAX)),
-            new ReflectionInstance(new ClassString(Text::class)),
-            new ReflectionIntersectionType(),
-            new ReflectionMethod(Text::class, '__toString'),
-            new ReflectionNamedType(),
-            new ReflectionObject(new Text('foo bar baz')),
-            new ReflectionParameter([Text::class, '__construct'], 0),
-            new ReflectionProperty(Text::class, 'string'),
-            new ReflectionProperty(Text::class, 'string'),
-            new ReflectionUnionType(),
-            new Text($this->randomChars()),
-            new stdClass(),
-            parent::randomClassStringOrObjectInstance(),
-            parent::randomClassStringOrObjectInstance(),
-            stdClass::class,
-        ];
-        return (
-            empty($classes)
-            ? new stdClass()
-            : $classes[array_rand($classes)]
-        );
-    }
-
-    private function intGenerator(int $max): Generator {
-        for ($i = 1; $i <= $max; $i++) {
-            yield $i;
-        }
-    }
-
-    private function reflectionReference(): ReflectionReference|ClassString
-    {
-        $referencedValue = 'value';
-        $reflectionReference = ReflectionReference::fromArrayElement(
-            [&$referencedValue],
-            0
-        );
-        return $reflectionReference ?? new ClassString(ReflectionReference::class);
-    }
 }
 
