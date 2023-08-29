@@ -352,8 +352,12 @@ class MockClassInstance implements MockClassInstanceInterface
                 $name => $types
             ) {
                 foreach($types as $type) {
-                    $classImplements = class_implements($type);
+                    if(class_exists($type)) {
+                        $classImplements = class_implements($type);
+                    }
                     if(
+                        isset($classImplements)
+                        &&
                         in_array(
                             \UnitEnum::class,
                             (
