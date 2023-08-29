@@ -349,6 +349,10 @@ class MockClassInstance implements MockClassInstanceInterface
                 $name => $types
             ) {
                 foreach($types as $type) {
+                    if($type === Generator::class) {
+                        $defaults[$name] = $this->mockGenerator();
+                        continue;
+                    }
                     if($this->isAClosure($type)) {
                         $defaults[$name] = $this->mockClosure();
                         continue;
