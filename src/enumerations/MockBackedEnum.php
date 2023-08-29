@@ -1,6 +1,6 @@
 <?php
 
-namespace Darling\PHPMockingUtilities\src\enumerations;
+namespace Darling\PHPMockingUtilities\enumerations;
 
 enum MockBackedEnum: string
 {
