@@ -352,6 +352,21 @@ class MockClassInstance implements MockClassInstanceInterface
                 $name => $types
             ) {
                 foreach($types as $type) {
+                    $classImplements = class_implements($type);
+                    if(
+                        in_array(
+                            \UnitEnum::class,
+                            (
+                                is_array($classImplements)
+                                ? $classImplements
+                                : []
+                            )
+                        )
+                    ) {
+                        $defaults[$name] = $type::cases()[array_rand($type::cases())];
+                        continue;
+                    }
+
                     if($type === Generator::class) {
                         $defaults[$name] = $this->mockGenerator();
                         continue;
