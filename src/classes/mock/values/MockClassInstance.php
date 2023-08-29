@@ -2,6 +2,9 @@
 
 namespace Darling\PHPMockingUtilities\classes\mock\values;
 
+use ReflectionEnum;
+use ReflectionEnumBackedCase;
+use ReflectionEnumUnitCase;
 use \Closure;
 use \Darling\PHPMockingUtilities\classes\mock\values\MockArray;
 use \Darling\PHPMockingUtilities\classes\mock\values\MockBool;
@@ -11,6 +14,8 @@ use \Darling\PHPMockingUtilities\classes\mock\values\MockInt;
 use \Darling\PHPMockingUtilities\classes\mock\values\MockMixedValue;
 use \Darling\PHPMockingUtilities\classes\mock\values\MockString;
 use \Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance as MockClassInstanceInterface;
+use \Darling\PHPMockingUtilities\src\enumerations\MockEnum;
+use \Darling\PHPMockingUtilities\src\enumerations\MockBackedEnum;
 use \Darling\PHPReflectionUtilities\classes\utilities\Reflection;
 use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection as ReflectionInterface;
 use \Darling\PHPTextTypes\classes\strings\ClassString;
@@ -29,9 +34,7 @@ use \ReflectionProperty;
 use \ReflectionReference;
 use \RuntimeException;
 use \stdClass;
-use ReflectionEnum;
-use ReflectionEnumBackedCase;
-use ReflectionEnumUnitCase;
+
 
 class MockClassInstance implements MockClassInstanceInterface
 {
@@ -251,16 +254,16 @@ class MockClassInstance implements MockClassInstanceInterface
             return new ReflectionGenerator($this->mockGenerator());
         }
         if($class === ReflectionEnum::class) {
-            return new ReflectionEnum(Enum::class);
+            return new ReflectionEnum(MockEnum::class);
         }
         if($class === ReflectionEnumBackedCase::class) {
             return new ReflectionEnumBackedCase(
-                BackedEnum::class, 'Bar'
+                MockBackedEnum::class, 'Bar'
             );
         }
         if($class === ReflectionEnumUnitCase::class) {
             return new ReflectionEnumUnitCase(
-                Enum::class,
+                MockEnum::class,
                 'Foo'
             );
         }
@@ -589,16 +592,3 @@ class MockClassInstance implements MockClassInstanceInterface
     }
 }
 
-enum Enum
-{
-    case Foo;
-    case Bar;
-    case Baz;
-}
-
-enum BackedEnum: string
-{
-    case Foo = 'foo';
-    case Bar = 'bar';
-    case Baz = 'baz';
-}
