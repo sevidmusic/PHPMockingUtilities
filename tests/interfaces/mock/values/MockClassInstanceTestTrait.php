@@ -724,6 +724,8 @@ trait MockClassInstanceTestTrait
         $attributes = $reflectedClassWithAttributes->getAttributes();
         /** @var array<int, class-string|object> $classes */
         $classes = [
+            $this->reflectionReference(),
+            ($attributes[0] ?? new ReflectionClass(AnAttributeClass::class)),
             AbstractImplementationOfInterfaceForClassThatDefinesMethods::class,
             ClassThatDoesNotDefineMethods::class,
             ImplementationOfInterfaceForClassThatDefinesMethods::class,
@@ -745,7 +747,7 @@ trait MockClassInstanceTestTrait
             new ReflectionEnumUnitCase(TestEnum::class, 'Foo'),
             new ReflectionException(),
             new ReflectionExtension('curl'),
-            new ReflectionFiber( new Fiber(function(): string { return 'foo'; })),
+            new ReflectionFiber(new Fiber(function(): string { return 'foo'; })),
             new ReflectionFunction(function(): void {}),
             new ReflectionGenerator($this->intGenerator(PHP_INT_MAX)),
             new ReflectionInstance(new ClassString(Text::class)),
@@ -762,7 +764,6 @@ trait MockClassInstanceTestTrait
             parent::randomClassStringOrObjectInstance(),
             parent::randomClassStringOrObjectInstance(),
             stdClass::class,
-            $this->reflectionReference(),
         ];
         return (
             empty($classes)
@@ -788,12 +789,3 @@ trait MockClassInstanceTestTrait
     }
 }
 
-/*
- *
-
-            (
-                isset($attributes[0])
-                ? $attributes[0]
-                : new ReflectionClass(AnAttributeClass::class)
-            ),
- */
