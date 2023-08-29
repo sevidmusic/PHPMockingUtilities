@@ -352,19 +352,12 @@ class MockClassInstance implements MockClassInstanceInterface
                 $name => $types
             ) {
                 foreach($types as $type) {
-                    if(class_exists($type)) {
-                        $classImplements = class_implements($type);
-                    }
                     if(
-                        isset($classImplements)
+                        class_exists($type)
                         &&
                         in_array(
                             \UnitEnum::class,
-                            (
-                                is_array($classImplements)
-                                ? $classImplements
-                                : []
-                            )
+                            class_implements($type),
                         )
                     ) {
                         $defaults[$name] = $type::cases()[array_rand($type::cases())];
