@@ -762,7 +762,7 @@ trait MockClassInstanceTestTrait
             parent::randomClassStringOrObjectInstance(),
             parent::randomClassStringOrObjectInstance(),
             stdClass::class,
-           $this->reflectionReference(),
+            $this->reflectionReference(),
         ];
         return (
             empty($classes)
