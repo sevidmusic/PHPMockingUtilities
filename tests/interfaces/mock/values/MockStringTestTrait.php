@@ -3,7 +3,7 @@
 namespace Darling\PHPMockingUtilities\tests\interfaces\mock\values;
 
 use Darling\PHPMockingUtilities\interfaces\mock\values\MockString;
-use Darling\PHPTextTypes\Tests\interfaces\strings\TextTestTrait;
+use Darling\PHPTextTypes\tests\interfaces\strings\TextTestTrait;
 
 /**
  * The MockStringTestTrait defines common tests for implementations
