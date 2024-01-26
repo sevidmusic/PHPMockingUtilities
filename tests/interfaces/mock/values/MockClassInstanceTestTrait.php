@@ -2,14 +2,12 @@
 
 namespace Darling\PHPMockingUtilities\tests\interfaces\mock\values;
 
-use \Darling\PHPMockingUtilities\tests\mock\classes\ClassThatDefinesAMethodThatAcceptsAnEnumAsAParameter;
 use \Closure;
 use \Darling\PHPMockingUtilities\classes\mock\values\MockClassInstance as MockClassInstanceImplementation;
 use \Darling\PHPMockingUtilities\interfaces\mock\values\MockClassInstance;
-use \Darling\PHPMockingUtilities\tests\PHPMockingUtilitiesTest;
-use \Darling\PHPMockingUtilities\tests\interfaces\mock\values\MockClassInstanceTestTrait;
 use \Darling\PHPMockingUtilities\tests\mock\abstractions\AbstractImplementationOfInterfaceForClassThatDefinesMethods;
 use \Darling\PHPMockingUtilities\tests\mock\classes\AnAttributeClass;
+use \Darling\PHPMockingUtilities\tests\mock\classes\ClassThatDefinesAMethodThatAcceptsAnEnumAsAParameter;
 use \Darling\PHPMockingUtilities\tests\mock\classes\ClassThatDoesNotDefineMethods;
 use \Darling\PHPMockingUtilities\tests\mock\classes\ImplementationOfInterfaceForClassThatDefinesMethods;
 use \Darling\PHPMockingUtilities\tests\mock\classes\TestEnum;
@@ -20,7 +18,6 @@ use \Darling\PHPReflectionUtilities\interfaces\utilities\Reflection;
 use \Darling\PHPTextTypes\classes\strings\ClassString;
 use \Darling\PHPTextTypes\classes\strings\Name;
 use \Darling\PHPTextTypes\classes\strings\Text;
-use \Darling\PHPTextTypes\classes\strings\UnknownClass;
 use \Darling\PHPTextTypes\interfaces\strings\Name as NameInterface;
 use \Darling\PHPTextTypes\interfaces\strings\Text as TextInterface;
 use \Fiber;
@@ -31,7 +28,6 @@ use \ReflectionClassConstant;
 use \ReflectionEnum;
 use \ReflectionEnumBackedCase;
 use \ReflectionEnumUnitCase;
-use \RuntimeException;
 use \ReflectionException;
 use \ReflectionExtension;
 use \ReflectionFiber;
@@ -45,6 +41,7 @@ use \ReflectionParameter;
 use \ReflectionProperty;
 use \ReflectionReference;
 use \ReflectionUnionType;
+use \RuntimeException;
 use \Stringable;
 use \stdClass;
 
@@ -339,6 +336,12 @@ trait MockClassInstanceTestTrait
         return $classes[array_rand($classes)];
     }
 
+    /**
+     * Return a Generator of ints.
+     *
+     * @return Generator<int>
+     *
+     */
     private function intGenerator(int $max): Generator {
         for ($i = 1; $i <= $max; $i++) {
             yield $i;
@@ -785,6 +788,15 @@ trait MockClassInstanceTestTrait
             )
         );
     }
+
+    abstract protected function randomChars(): string;
+    abstract protected function testFailedMessage(object $testedInstance, string $testedMethod, string $expectation): string;
+    abstract public static function assertEmpty(mixed $actual, string $message = ''): void;
+    abstract public static function assertTrue(mixed $condition, string $message = ''): void;
+    abstract public static function assertEquals(mixed $expected, mixed $actual, string $message = ''): void;
+    abstract public static function assertNotEmpty(mixed $actual, string $message = ''): void;
+    abstract public function expectException(string $exception): void;
+
 
 }
 
